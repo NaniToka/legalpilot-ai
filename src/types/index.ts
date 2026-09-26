@@ -2,13 +2,28 @@
  * LegalPilot AI - Data Types & Interfaces
  */
 
+export type DocumentFileType = "pdf" | "docx" | "txt";
+
 export interface DocumentMetadata {
   id: string;
   filename: string;
   fileSize: number;
-  fileType: "pdf" | "docx" | "txt";
+  fileType: DocumentFileType;
   uploadedAt: string;
   charCount?: number;
+}
+
+export type UploadStatus = "idle" | "selected" | "ready" | "preparing" | "error";
+
+export interface PreparedDocument {
+  id: string;
+  file: File;
+  filename: string;
+  fileType: DocumentFileType;
+  fileSize: number;
+  formattedSize: string;
+  uploadedAt: string;
+  status: UploadStatus;
 }
 
 export interface LegalSummary {

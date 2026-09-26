@@ -5,10 +5,14 @@ import { HeroSection } from "@/components/dashboard/HeroSection";
 import { QuickActionCards } from "@/components/dashboard/QuickActionCards";
 import { HowItWorksSection } from "@/components/dashboard/HowItWorksSection";
 import { TrustPrivacySection } from "@/components/dashboard/TrustPrivacySection";
+import { UploadModal } from "@/components/upload/UploadModal";
 import { StepPlaceholderModal } from "@/components/dashboard/StepPlaceholderModal";
+import { DocumentUploadWorkflow } from "@/components/upload/DocumentUploadWorkflow";
 
 export default function Home() {
-  const [modalState, setModalState] = useState<{
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+
+  const [placeholderState, setPlaceholderState] = useState<{
     isOpen: boolean;
     title: string;
     description: string;
@@ -19,15 +23,20 @@ export default function Home() {
   });
 
   const handleActionClick = (title: string, description: string) => {
-    setModalState({
-      isOpen: true,
-      title,
-      description,
-    });
-  };
-
-  const handleCloseModal = () => {
-    setModalState((prev) => ({ ...prev, isOpen: false }));
+    if (
+      title.includes("Upload") ||
+      title.includes("Simplify") ||
+      title.includes("Analyze") ||
+      title.includes("Ask")
+    ) {
+      setIsUploadModalOpen(true);
+    } else {
+      setPlaceholderState({
+        isOpen: true,
+        title,
+        description,
+      });
+    }
   };
 
   return (
@@ -35,21 +44,32 @@ export default function Home() {
       {/* 1. Hero / Welcome Section */}
       <HeroSection onActionClick={handleActionClick} />
 
-      {/* 2. Quick Action Cards */}
+      {/* 2. Embedded Upload Section */}
+      <section className="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 sm:p-10 space-y-6">
+        <DocumentUploadWorkflow />
+      </section>
+
+      {/* 3. Quick Action Cards */}
       <QuickActionCards onCardClick={handleActionClick} />
 
-      {/* 3. How It Works Section */}
+      {/* 4. How It Works Section */}
       <HowItWorksSection />
 
-      {/* 4. Trust & Privacy Section */}
+      {/* 5. Trust & Privacy Section */}
       <TrustPrivacySection />
 
-      {/* Interactive Step 3 Placeholder Modal */}
+      {/* Upload Modal triggered by action buttons */}
+      <UploadModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+      />
+
+      {/* Placeholder Modal for Compare & Non-Upload Actions */}
       <StepPlaceholderModal
-        isOpen={modalState.isOpen}
-        onClose={handleCloseModal}
-        title={modalState.title}
-        description={modalState.description}
+        isOpen={placeholderState.isOpen}
+        onClose={() => setPlaceholderState((prev) => ({ ...prev, isOpen: false }))}
+        title={placeholderState.title}
+        description={placeholderState.description}
       />
     </div>
   );
