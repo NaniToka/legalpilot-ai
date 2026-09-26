@@ -213,3 +213,37 @@ export interface StructuredLegalAnalysisContract {
   questions?: string[];
   nextSteps?: string[];
 }
+
+// --- Step 9 Evidence-Grounded Legal Q&A Contracts ---
+
+export type QAAnswerType = "document_fact" | "document_explanation" | "insufficient_information";
+
+export type QAConfidenceLevel =
+  | "Strongly supported by document"
+  | "Partially supported by document"
+  | "Insufficient document evidence";
+
+export interface QASourceReference {
+  pageNumber?: number;
+  sectionHeader?: string;
+  excerpt?: string;
+}
+
+export interface StructuredQAResult {
+  question: string;
+  answer: string;
+  answerType: QAAnswerType;
+  confidence: QAConfidenceLevel;
+  sources: QASourceReference[];
+  limitations: string[];
+  suggestedFollowUps: string[];
+  answeredAt: string;
+}
+
+export interface QAMessageItem {
+  id: string;
+  question: string;
+  result: StructuredQAResult;
+  timestamp: string;
+}
+

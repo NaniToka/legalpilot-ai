@@ -14,7 +14,7 @@ Legal contracts, lease agreements, terms of service, and official notices are of
 
 ---
 
-## 🚀 End-to-End Workflow (Step 8 Implemented)
+## 🚀 End-to-End Workflow (Step 9 Implemented)
 
 ```
 1. UPLOAD PDF / DOCX
@@ -27,7 +27,9 @@ Legal contracts, lease agreements, terms of service, and official notices are of
          ↓
 5. "ANALYZE IMPORTANT CLAUSES" (Clause, Obligation & Points to Review)
          ↓
-6. GROUNDED FINDINGS DASHBOARD (Category, Source Ref, Severity)
+6. "ASK QUESTIONS (Q&A)" (Evidence-Grounded Document Retrieval & Q&A)
+         ↓
+7. GROUNDED ANSWER DASHBOARD (Sources, Confidence, Suggested Follow-ups)
 ```
 
 ### Document Capabilities
@@ -50,6 +52,14 @@ Legal contracts, lease agreements, terms of service, and official notices are of
 - **Financial Commitments**: Structured extraction of amounts, currencies, and payment conditions.
 - **Grounded Legal Questions**: Generates practical, evidence-backed questions for a legal professional based on identified ambiguities.
 - **Page & Section Source References**: Attaches page numbers, section headers, or short text references to findings.
+
+#### 3. Evidence-Grounded Legal Q&A (Step 9)
+- **Document-Grounded Answers**: Answers user questions using strictly the extracted context of the uploaded file without fabricating legal facts or terms.
+- **Evidence Confidence Tiers**: Classifies output confidence (`Strongly supported by document`, `Partially supported by document`, `Insufficient document evidence`).
+- **Insufficient Information Handling**: Transparently indicates when a question cannot be answered from document text (`"I couldn't find enough information in the uploaded document..."`).
+- **Source Citation Cards**: Highlights exact page numbers, section headers, and concise text excerpts supporting each answer.
+- **Suggested Follow-up Questions**: Dynamically generates contextually relevant follow-up questions for deeper exploration.
+- **Conversation Session History**: Preserves chat turns for the active document without persisting sensitive data to third parties.
 
 ---
 

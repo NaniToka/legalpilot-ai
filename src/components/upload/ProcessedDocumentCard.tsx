@@ -14,6 +14,7 @@ import {
   Loader2,
   BrainCircuit,
   Bookmark,
+  MessageSquare,
 } from "lucide-react";
 import {
   ProcessedDocumentPayload,
@@ -24,6 +25,7 @@ import { analyzeDocumentUnderstanding } from "@/services/ai/documentAnalysisServ
 import { analyzeImportantClauses } from "@/services/ai/clauseAnalysisService";
 import { StructuredAnalysisView } from "../analysis/StructuredAnalysisView";
 import { ClauseAnalysisView } from "../analysis/ClauseAnalysisView";
+import { DocumentQAView } from "../qa/DocumentQAView";
 
 interface ProcessedDocumentCardProps {
   payload: ProcessedDocumentPayload;
@@ -38,7 +40,8 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
   const [showFullText, setShowFullText] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const [activeAction, setActiveAction] = useState<"none" | "understanding" | "clauses">("none");
+  const [activeAction, setActiveAction] = useState<"none" | "understanding" | "clauses" | "qa">("none");
+  const [showQAView, setShowQAView] = useState(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
 
   const [understandingResult, setUnderstandingResult] = useState<StructuredLegalDocumentAnalysis | null>(null);
@@ -129,6 +132,15 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
       setActiveAction("none");
     }
   };
+
+  if (showQAView) {
+    return (
+      <DocumentQAView
+        payload={payload}
+        onReset={() => setShowQAView(false)}
+      />
+    );
+  }
 
   if (clauseResult) {
     return (
@@ -254,19 +266,28 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
             <button
               onClick={handleAnalyzeClauses}
               disabled={activeAction !== "none"}
-              className="inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold px-6 py-3 rounded-xl shadow-xl shadow-amber-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-50"
+              className="inline-flex items-center justify-center space-x-2 bg-slate-800 hover:bg-slate-750 text-slate-200 font-semibold px-5 py-3 rounded-xl border border-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-50"
             >
               {activeAction === "clauses" ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
                   <span>Analyzing clauses...</span>
                 </>
               ) : (
                 <>
-                  <Bookmark className="w-4 h-4" />
-                  <span>Analyze Important Clauses</span>
+                  <Bookmark className="w-4 h-4 text-amber-400" />
+                  <span>Analyze Clauses</span>
                 </>
               )}
+            </button>
+
+            <button
+              onClick={() => setShowQAView(true)}
+              disabled={activeAction !== "none"}
+              className="inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold px-6 py-3 rounded-xl shadow-xl shadow-amber-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-50"
+            >
+              <MessageSquare className="w-4 h-4" />
+              <span>Ask Questions (Q&A)</span>
             </button>
           </div>
         </div>
