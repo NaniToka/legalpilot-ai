@@ -16,20 +16,24 @@ import {
   Bookmark,
   MessageSquare,
   ListTodo,
+  FileText as BriefIcon,
 } from "lucide-react";
 import {
   ProcessedDocumentPayload,
   StructuredLegalDocumentAnalysis,
   StructuredClauseAnalysisResult,
   StructuredNextStepsResult,
+  StructuredConsultationBriefResult,
 } from "@/types";
 import { analyzeDocumentUnderstanding } from "@/services/ai/documentAnalysisService";
 import { analyzeImportantClauses } from "@/services/ai/clauseAnalysisService";
 import { generateDocumentNextSteps } from "@/services/ai/nextStepsService";
+import { generateConsultationBrief } from "@/services/ai/consultationService";
 import { StructuredAnalysisView } from "../analysis/StructuredAnalysisView";
 import { ClauseAnalysisView } from "../analysis/ClauseAnalysisView";
 import { DocumentQAView } from "../qa/DocumentQAView";
 import { DocumentChecklistCard } from "../checklist/DocumentChecklistCard";
+import { ConsultationBriefView } from "../consultation/ConsultationBriefView";
 
 interface ProcessedDocumentCardProps {
   payload: ProcessedDocumentPayload;
@@ -44,13 +48,14 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
   const [showFullText, setShowFullText] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const [activeAction, setActiveAction] = useState<"none" | "understanding" | "clauses" | "checklist" | "qa">("none");
+  const [activeAction, setActiveAction] = useState<"none" | "understanding" | "clauses" | "checklist" | "consultation" | "qa">("none");
   const [showQAView, setShowQAView] = useState(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
 
   const [understandingResult, setUnderstandingResult] = useState<StructuredLegalDocumentAnalysis | null>(null);
   const [clauseResult, setClauseResult] = useState<StructuredClauseAnalysisResult | null>(null);
   const [nextStepsResult, setNextStepsResult] = useState<StructuredNextStepsResult | null>(null);
+  const [consultationResult, setConsultationResult] = useState<StructuredConsultationBriefResult | null>(null);
 
   const isPdf = payload.fileType === "pdf";
 
@@ -175,6 +180,54 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
       setActiveAction("none");
     }
   };
+
+  const handlePrepareConsultationBrief = async () => {
+    setActiveAction("consultation");
+    setAnalysisError(null);
+
+    try {
+      const res = await fetch("/api/ai/process", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          task: "consultation_brief",
+          documentContext: {
+            filename: payload.filename,
+            pages: payload.pages,
+            chunks: payload.chunks,
+            documentText: payload.extractedText,
+          },
+          userInput: `Analyze the uploaded document (${payload.filename}) and prepare a concise, structured legal professional consultation brief.`,
+        }),
+      });
+
+      if (res.ok) {
+        const aiRes = await res.json();
+        if (aiRes.success && aiRes.data) {
+          setConsultationResult(aiRes.data);
+          setActiveAction("none");
+          return;
+        }
+      }
+
+      const brief = await generateConsultationBrief(payload);
+      setConsultationResult(brief);
+      setActiveAction("none");
+    } catch (err: any) {
+      setAnalysisError(err.message || "Failed to prepare legal consultation brief. Please check API configuration.");
+      setActiveAction("none");
+    }
+  };
+
+  if (consultationResult) {
+    return (
+      <ConsultationBriefView
+        brief={consultationResult}
+        filename={payload.filename}
+        onReset={() => setConsultationResult(null)}
+      />
+    );
+  }
 
   if (nextStepsResult) {
     return (
@@ -348,6 +401,24 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
                 <>
                   <ListTodo className="w-4 h-4" />
                   <span>Your Next Steps</span>
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={handlePrepareConsultationBrief}
+              disabled={activeAction !== "none"}
+              className="inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-slate-950 font-extrabold px-6 py-3 rounded-xl shadow-xl shadow-purple-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 disabled:opacity-50"
+            >
+              {activeAction === "consultation" ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-purple-950" />
+                  <span>Preparing consultation brief...</span>
+                </>
+              ) : (
+                <>
+                  <BriefIcon className="w-4 h-4" />
+                  <span>Prepare Consultation Brief</span>
                 </>
               )}
             </button>

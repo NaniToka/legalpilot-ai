@@ -14,7 +14,7 @@ Legal contracts, lease agreements, terms of service, and official notices are of
 
 ---
 
-## 🚀 End-to-End Workflow (Step 11 Implemented)
+## 🚀 End-to-End Workflow (Step 12 Implemented)
 
 ```
 1. UPLOAD PDF / DOCX
@@ -32,6 +32,8 @@ Legal contracts, lease agreements, terms of service, and official notices are of
 7. "COMPARE DOCUMENTS" (Deterministic Diff + AI Legal Difference Analysis)
          ↓
 8. "YOUR NEXT STEPS" (Actionable Document Checklist & Task Management)
+         ↓
+9. "PREPARE CONSULTATION BRIEF" (Structured Legal Professional Preparation Brief)
 ```
 
 ### Document Capabilities
@@ -78,6 +80,13 @@ Legal contracts, lease agreements, terms of service, and official notices are of
 - **Missing Information Tracking**: Generates `INFORMATION_NEEDED` items for absent or ambiguous terms.
 - **Interactive Task Management**: Allows users to check/uncheck items (`TODO` $\leftrightarrow$ `COMPLETED`), filter by priority (`HIGH`, `MEDIUM`, `LOW`), filter by status, and view expanded source evidence and clause snippets.
 - **Dedicated Lawyer Questions**: Highlights neutral, practical questions to raise with a licensed legal professional.
+
+#### 6. Legal Professional Consultation Brief (Step 12)
+- **Preparation Brief Generator**: Transforms document analysis into a structured consultation brief for meeting a licensed attorney or legal professional.
+- **11 Essential Sections**: Document Overview, Key Facts, Key Obligations, Important Dates, Financial Terms, Termination & Renewal, Points to Clarify, Questions for Legal Professional, Information to Bring, Source References, and Limitations.
+- **Document Comparison Integration**: Includes version comparison highlights when prior comparisons were performed.
+- **Plain-Text Export**: Provides one-click "Copy Brief" plain-text clipboard action for printing, email, or meeting preparation notes.
+- **Strict Grounding & Safety**: Preserves relative deadlines verbatim, avoids legal conclusions or validity declarations, and prominently renders legal safety disclaimers.
 
 ---
 

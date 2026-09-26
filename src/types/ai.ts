@@ -376,5 +376,59 @@ export interface StructuredNextStepsResult {
   limitations: string[];
 }
 
+// --- Step 12 Legal Professional Consultation Brief Contracts ---
+
+export interface ConsultationBriefFactItem {
+  id: string;
+  title: string;
+  description: string;
+  category?: string;
+  sourceReferences?: string[];
+}
+
+export interface ConsultationBriefObligationItem {
+  id: string;
+  party: string;
+  obligation: string;
+  deadlineText?: string;
+  sourceReferences?: string[];
+}
+
+export interface ConsultationBriefFinancialItem {
+  id: string;
+  description: string;
+  amount?: string;
+  conditions?: string;
+  sourceReferences?: string[];
+}
+
+export interface ConsultationBriefDateItem {
+  id: string;
+  dateOrTrigger: string;
+  requirement: string;
+  sourceReferences?: string[];
+}
+
+export interface StructuredConsultationBriefResult {
+  id: string;
+  documentId: string;
+  documentName: string;
+  generatedAt: string;
+  title: string;
+  documentSummary: string;
+  keyFacts: ConsultationBriefFactItem[];
+  keyObligations: ConsultationBriefObligationItem[];
+  importantDates: ConsultationBriefDateItem[];
+  financialTerms: ConsultationBriefFinancialItem[];
+  terminationAndRenewal: ConsultationBriefFactItem[];
+  pointsToClarify: ConsultationBriefFactItem[];
+  questionsForLegalProfessional: string[];
+  informationToBring: string[];
+  comparisonHighlights?: string[];
+  sourceReferences: string[];
+  limitations: string[];
+}
+
+
 
 
