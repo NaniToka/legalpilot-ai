@@ -16,8 +16,10 @@ const MAX_CACHE_ENTRIES = 100;
 const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
 
 function generateCacheKey(options: AIRequestOptions): string {
+  const docText = options.documentContext?.documentText || "";
+  const snippet = docText.length > 50 ? `${docText.slice(0, 30)}_${docText.slice(-20)}` : docText;
   const docKey = options.documentContext
-    ? `${options.documentContext.filename || ""}_${options.documentContext.documentText?.length || 0}_${(options.documentContext.chunks || []).length}`
+    ? `${options.documentContext.filename || ""}_${docText.length}_${snippet}`
     : "nodoc";
   return `${options.task}:${docKey}:${options.userInput || ""}:${options.model || "default"}`;
 }

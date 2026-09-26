@@ -31,8 +31,23 @@ export function normalizeLegalText(rawText: string): string {
 }
 
 export function countWords(text: string): number {
-  if (!text || !text.trim()) return 0;
-  return text.trim().split(/\s+/).length;
+  if (!text) return 0;
+  const trimmed = text.trim();
+  if (!trimmed) return 0;
+
+  let count = 0;
+  let inWord = false;
+  for (let i = 0; i < trimmed.length; i++) {
+    if (trimmed.charCodeAt(i) > 32) {
+      if (!inWord) {
+        count++;
+        inWord = true;
+      }
+    } else {
+      inWord = false;
+    }
+  }
+  return count;
 }
 
 /**

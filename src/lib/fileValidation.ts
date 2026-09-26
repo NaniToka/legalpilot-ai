@@ -65,7 +65,7 @@ export function verifyFileSignature(
 }
 
 export function validateLegalDocument(
-  file: File,
+  file: { name: string; size: number; type?: string },
   buffer?: Buffer | Uint8Array
 ): ValidationResult {
   if (!file) {

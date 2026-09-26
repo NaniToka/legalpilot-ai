@@ -15,9 +15,7 @@ export async function processLegalDocument(
   const formattedSize = formatFileSize(fileSize);
   const processedAt = new Date().toISOString();
 
-  // Convert Buffer to Uint8Array for W3C File BlobPart compatibility
-  const uint8Array = new Uint8Array(fileBuffer || []);
-  const mockFile = new File([uint8Array], safeFilename, { type: declaredMimeType || "" });
+  const mockFile = { name: safeFilename, size: fileSize, type: declaredMimeType || "" };
   const validation = validateLegalDocument(mockFile, fileBuffer);
 
   if (!validation.isValid || !validation.fileType) {
