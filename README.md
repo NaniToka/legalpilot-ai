@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LegalPilot AI
 
-## Getting Started
+> **Understand Your Legal Documents. Know Your Next Step.**
 
-First, run the development server:
+LegalPilot AI is a modern GenAI-powered legal information assistant created for the **PromptWars: Virtual challenge ("AI for Legal Assistance & Access")**.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ⚖️ Project Purpose
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Legal contracts, lease agreements, terms of service, and official notices are often filled with dense legal jargon that makes them difficult for individuals, small business owners, and non-lawyers to understand.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**LegalPilot AI** aims to bridge this legal access gap by providing automated, accessible, plain-English document analysis. It breaks down complex agreements into understandable key terms, highlights high-risk clauses, facilitates interactive Q&A on documents, compares contract versions, and generates actionable step-by-step checklists.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🚀 Main Planned Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Smart Document Extraction**: Upload contracts and legal notices in PDF, DOCX, or TXT formats.
+2. **Plain-English Summarization**: Instant executive breakdowns of key terms, parties involved, and critical dates.
+3. **Clause & Risk Detection**: Automated identification of high-risk terms, unfair penalties, liability caps, and missing protections.
+4. **Interactive Legal Q&A**: Conversational AI assistant allowing natural language queries directly against uploaded documents.
+5. **Contract Comparison**: Side-by-side comparison of two document versions with diff analysis.
+6. **Actionable Checklists**: Structured obligation lists, deadline reminders, and signing/execution steps.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🛠️ Technology Stack
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Framework**: [Next.js](https://nextjs.org/) (React 19, App Router)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Iconography**: [Lucide React](https://lucide.dev/)
+- **Architecture**: Modular, full-stack API-ready architecture with clean separation of services, types, parsers, and UI components.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 💻 Local Setup Instructions
+
+### Prerequisites
+- Node.js 18.x or higher
+- npm 9.x or higher
+
+### Steps
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/YOUR_GITHUB_USERNAME/legalpilot-ai.git
+   cd legalpilot-ai
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment Variables**:
+   Copy the example environment file to `.env.local`:
+   ```bash
+   cp .env.example .env.local
+   ```
+
+4. **Run the development server**:
+   ```bash
+   npm run dev
+   ```
+
+5. **Open in browser**:
+   Navigate to [http://localhost:3000](http://localhost:3000) to view the application shell.
+
+---
+
+## ⚠️ Legal Disclaimer
+
+> **IMPORTANT**: LegalPilot AI provides automated informational analysis and document breakdown for educational and navigational purposes only. It does **NOT** provide formal legal advice, legal representation, or establish an attorney-client relationship. Users should always consult with a qualified, licensed attorney or legal professional for formal legal counsel regarding specific legal agreements or disputes.
+
+---
+
+## 📄 License
+
+This project is created for the **PromptWars: Virtual Challenge**. All rights reserved.
