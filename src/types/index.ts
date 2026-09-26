@@ -2,7 +2,43 @@
  * LegalPilot AI - Data Types & Interfaces
  */
 
-export type DocumentFileType = "pdf" | "docx" | "txt";
+export type DocumentFileType = "pdf" | "docx";
+
+export type ProcessingStatus = "idle" | "validating" | "processing" | "completed" | "failed";
+
+export interface DocumentPage {
+  pageNumber: number;
+  text: string;
+  charCount: number;
+  wordCount: number;
+}
+
+export interface DocumentChunk {
+  id: string;
+  heading?: string;
+  text: string;
+  charCount: number;
+  wordCount: number;
+  pageNumber?: number;
+}
+
+export interface ProcessedDocumentPayload {
+  documentId: string;
+  filename: string;
+  fileType: DocumentFileType;
+  fileSize: number;
+  formattedSize: string;
+  processedAt: string;
+  status: ProcessingStatus;
+  extractedText: string;
+  characterCount: number;
+  wordCount: number;
+  pageCount: number;
+  pages: DocumentPage[];
+  chunks: DocumentChunk[];
+  warnings: string[];
+  errors: string[];
+}
 
 export interface DocumentMetadata {
   id: string;
@@ -13,8 +49,6 @@ export interface DocumentMetadata {
   charCount?: number;
 }
 
-export type UploadStatus = "idle" | "selected" | "ready" | "preparing" | "error";
-
 export interface PreparedDocument {
   id: string;
   file: File;
@@ -23,7 +57,7 @@ export interface PreparedDocument {
   fileSize: number;
   formattedSize: string;
   uploadedAt: string;
-  status: UploadStatus;
+  status: "idle" | "selected" | "ready" | "preparing" | "error";
 }
 
 export interface LegalSummary {

@@ -4,23 +4,26 @@ import React, { useState } from "react";
 import { UploadArea } from "./UploadArea";
 import { SelectedFileCard } from "./SelectedFileCard";
 import { UploadErrorAlert } from "./UploadErrorAlert";
-import { DocumentPreparationCard } from "./DocumentPreparationCard";
+import { ProcessedDocumentCard } from "./ProcessedDocumentCard";
 import { validateLegalDocument, formatFileSize } from "@/lib/fileValidation";
-import { PreparedDocument } from "@/types";
+import { PreparedDocument, ProcessedDocumentPayload } from "@/types";
+import { Loader2 } from "lucide-react";
 
 interface DocumentUploadWorkflowProps {
-  onDocumentPrepared?: (doc: PreparedDocument) => void;
+  onDocumentProcessed?: (payload: ProcessedDocumentPayload) => void;
 }
 
 export const DocumentUploadWorkflow: React.FC<DocumentUploadWorkflowProps> = ({
-  onDocumentPrepared,
+  onDocumentProcessed,
 }) => {
   const [selectedDoc, setSelectedDoc] = useState<PreparedDocument | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isPrepared, setIsPrepared] = useState<boolean>(false);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [processedPayload, setProcessedPayload] = useState<ProcessedDocumentPayload | null>(null);
 
   const handleFileSelected = (file: File) => {
     setErrorMessage(null);
+    setProcessedPayload(null);
 
     const validation = validateLegalDocument(file);
 
@@ -41,32 +44,59 @@ export const DocumentUploadWorkflow: React.FC<DocumentUploadWorkflowProps> = ({
     };
 
     setSelectedDoc(preparedDoc);
-    setIsPrepared(false);
   };
 
   const handleRemove = () => {
     setSelectedDoc(null);
     setErrorMessage(null);
-    setIsPrepared(false);
+    setProcessedPayload(null);
+    setIsProcessing(false);
   };
 
-  const handleContinue = () => {
+  const handleAnalyzeAndProcess = async () => {
     if (!selectedDoc) return;
-    const updatedDoc: PreparedDocument = {
-      ...selectedDoc,
-      status: "preparing",
-    };
-    setSelectedDoc(updatedDoc);
-    setIsPrepared(true);
 
-    if (onDocumentPrepared) {
-      onDocumentPrepared(updatedDoc);
+    setIsProcessing(true);
+    setErrorMessage(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedDoc.file);
+
+      const res = await fetch("/api/documents/process", {
+        method: "POST",
+        body: formData,
+      });
+
+      const payload: ProcessedDocumentPayload = await res.json();
+
+      if (!res.ok || payload.status === "failed") {
+        const errorMsg =
+          payload.errors && payload.errors.length > 0
+            ? payload.errors[0]
+            : "Failed to process document. Please verify the document format.";
+        setErrorMessage(errorMsg);
+        setIsProcessing(false);
+        return;
+      }
+
+      setProcessedPayload(payload);
+      setIsProcessing(false);
+
+      if (onDocumentProcessed) {
+        onDocumentProcessed(payload);
+      }
+    } catch (err: any) {
+      setErrorMessage(
+        err.message || "Network error while connecting to processing service. Please try again."
+      );
+      setIsProcessing(false);
     }
   };
 
   return (
     <div className="w-full max-w-3xl mx-auto space-y-6">
-      {/* Error Alert if validation fails */}
+      {/* Error Alert */}
       {errorMessage && (
         <UploadErrorAlert
           message={errorMessage}
@@ -74,8 +104,23 @@ export const DocumentUploadWorkflow: React.FC<DocumentUploadWorkflowProps> = ({
         />
       )}
 
-      {/* Conditional Workflow States */}
-      {!selectedDoc && (
+      {/* Loading Overlay State */}
+      {isProcessing && (
+        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-10 text-center space-y-4 shadow-2xl animate-fade-in">
+          <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 mx-auto">
+            <Loader2 className="w-7 h-7 animate-spin" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-xl font-bold text-slate-100">Processing Legal Document...</h3>
+            <p className="text-xs sm:text-sm text-slate-400 font-mono">
+              Extracting text, building page structures, and normalizing legal wording
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Workflow States */}
+      {!selectedDoc && !isProcessing && !processedPayload && (
         <div className="space-y-4">
           <div className="space-y-1 text-center max-w-xl mx-auto mb-6">
             <h2 className="text-xl sm:text-2xl font-bold text-slate-100 tracking-tight">
@@ -90,18 +135,19 @@ export const DocumentUploadWorkflow: React.FC<DocumentUploadWorkflowProps> = ({
         </div>
       )}
 
-      {selectedDoc && !isPrepared && (
+      {selectedDoc && !isProcessing && !processedPayload && (
         <SelectedFileCard
           document={selectedDoc}
           onRemove={handleRemove}
           onReplaceClick={handleRemove}
-          onContinue={handleContinue}
+          onContinue={handleAnalyzeAndProcess}
+          isPreparing={isProcessing}
         />
       )}
 
-      {selectedDoc && isPrepared && (
-        <DocumentPreparationCard
-          document={selectedDoc}
+      {processedPayload && !isProcessing && (
+        <ProcessedDocumentCard
+          payload={processedPayload}
           onReset={handleRemove}
         />
       )}
