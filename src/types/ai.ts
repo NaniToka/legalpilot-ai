@@ -247,3 +247,89 @@ export interface QAMessageItem {
   timestamp: string;
 }
 
+// --- Step 10 Legal Document Comparison Contracts ---
+
+export type ComparisonChangeType = "added" | "removed" | "modified";
+
+export interface DeterministicDiffChunk {
+  id: string;
+  changeType: ComparisonChangeType | "unchanged";
+  originalChunkId?: string;
+  newChunkId?: string;
+  originalText?: string;
+  newText?: string;
+  originalPage?: number;
+  newPage?: number;
+  originalHeading?: string;
+  newHeading?: string;
+}
+
+export interface DeterministicDiffResult {
+  documentAId: string;
+  documentAName: string;
+  documentBId: string;
+  documentBName: string;
+  totalChunksA: number;
+  totalChunksB: number;
+  addedChunksCount: number;
+  removedChunksCount: number;
+  modifiedChunksCount: number;
+  unchangedChunksCount: number;
+  diffs: DeterministicDiffChunk[];
+}
+
+export interface ComparisonChangeItem {
+  category: string;
+  title: string;
+  changeType: ComparisonChangeType;
+  originalText?: string;
+  newText?: string;
+  explanation: string;
+  whyItMayMatter: string;
+  originalSource?: string;
+  newSource?: string;
+}
+
+export interface ChangedObligationItem {
+  party: string;
+  originalObligation?: string;
+  newObligation?: string;
+  explanation: string;
+  sourceRef?: string;
+}
+
+export interface ChangedFinancialTermItem {
+  description: string;
+  originalAmount?: string;
+  newAmount?: string;
+  explanation: string;
+  sourceRef?: string;
+}
+
+export interface ChangedDateItem {
+  dateOrTrigger: string;
+  originalRequirement?: string;
+  newRequirement?: string;
+  explanation: string;
+  sourceRef?: string;
+}
+
+export interface StructuredDocumentComparisonResult {
+  documentAId: string;
+  documentAName: string;
+  documentBId: string;
+  documentBName: string;
+  comparedAt: string;
+  totalChangesCount: number;
+  summary: string;
+  affectedCategories: string[];
+  changes: ComparisonChangeItem[];
+  changedObligations: ChangedObligationItem[];
+  changedFinancialTerms: ChangedFinancialTermItem[];
+  changedDates: ChangedDateItem[];
+  changedTerminationTerms: ComparisonChangeItem[];
+  questionsForReview: string[];
+  limitations: string[];
+}
+
+

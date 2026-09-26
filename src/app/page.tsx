@@ -23,7 +23,9 @@ export default function Home() {
   });
 
   const handleActionClick = (title: string, description: string) => {
-    if (
+    if (title.includes("Compare")) {
+      window.location.href = "/compare";
+    } else if (
       title.includes("Upload") ||
       title.includes("Simplify") ||
       title.includes("Analyze") ||

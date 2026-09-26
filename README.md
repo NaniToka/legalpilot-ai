@@ -14,7 +14,7 @@ Legal contracts, lease agreements, terms of service, and official notices are of
 
 ---
 
-## 🚀 End-to-End Workflow (Step 9 Implemented)
+## 🚀 End-to-End Workflow (Step 10 Implemented)
 
 ```
 1. UPLOAD PDF / DOCX
@@ -29,7 +29,9 @@ Legal contracts, lease agreements, terms of service, and official notices are of
          ↓
 6. "ASK QUESTIONS (Q&A)" (Evidence-Grounded Document Retrieval & Q&A)
          ↓
-7. GROUNDED ANSWER DASHBOARD (Sources, Confidence, Suggested Follow-ups)
+7. "COMPARE DOCUMENTS" (Deterministic Diff + AI Legal Difference Analysis)
+         ↓
+8. SIDE-BY-SIDE COMPARISON DASHBOARD (Added, Removed, Modified, Source Refs)
 ```
 
 ### Document Capabilities
@@ -60,6 +62,14 @@ Legal contracts, lease agreements, terms of service, and official notices are of
 - **Source Citation Cards**: Highlights exact page numbers, section headers, and concise text excerpts supporting each answer.
 - **Suggested Follow-up Questions**: Dynamically generates contextually relevant follow-up questions for deeper exploration.
 - **Conversation Session History**: Preserves chat turns for the active document without persisting sensitive data to third parties.
+
+#### 4. Legal Document Comparison (Step 10)
+- **Two-Document Processing Workflow**: Upload Document A (Original) and Document B (New Version) in PDF or DOCX format.
+- **Deterministic Text & Structural Diff Engine**: Pre-calculates textual differences (`Added`, `Removed`, `Modified`, `Unchanged`) before AI interpretation to ensure zero hallucinated diffs.
+- **Side-by-Side Clause View**: Displays side-by-side comparison boxes for Document A vs Document B with color-neutral status badges and source page/section references.
+- **Grounded Change Breakdowns**: Dedicated sections for Changed Obligations, Changed Financial Terms, Changed Dates & Deadlines, and Changed Termination Terms.
+- **Neutral Change Terminology**: Uses factual change labels (`added`, `removed`, `modified`) instead of fake numerical risk scores.
+- **Tailored Legal Review Questions**: Generates practical questions to raise with a legal professional regarding version changes.
 
 ---
 
