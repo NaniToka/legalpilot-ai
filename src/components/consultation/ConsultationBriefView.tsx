@@ -15,6 +15,7 @@ import {
   AlertCircle,
   GitCompare,
   Bookmark,
+  Printer,
 } from "lucide-react";
 import { StructuredConsultationBriefResult } from "@/types";
 import { formatConsultationBriefAsPlainText } from "@/services/ai/prompts/consultationPrompt";
@@ -39,25 +40,38 @@ export const ConsultationBriefView: React.FC<ConsultationBriefViewProps> = ({
     setTimeout(() => setCopied(false), 2500);
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
-    <div className="space-y-8 max-w-4xl mx-auto animate-fade-in">
+    <div className="space-y-8 max-w-4xl mx-auto animate-fade-in print:text-black print:space-y-4">
       {/* Top Banner */}
-      <div className="bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+      <div className="bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl print:border-none print:shadow-none print:bg-none print:p-0">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6 print:pb-2">
           <div className="space-y-1">
-            <div className="flex items-center space-x-2 text-purple-400 font-mono text-xs uppercase tracking-wider">
-              <FileText className="w-4 h-4" />
-              <span>Legal Professional Consultation Brief Ready</span>
+            <div className="flex items-center space-x-2 text-purple-400 font-mono text-xs uppercase tracking-wider print:text-slate-700">
+              <FileText className="w-4 h-4 print:hidden" />
+              <span>Legal Professional Consultation Brief</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-100 tracking-tight break-all">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-100 tracking-tight break-all print:text-black">
               {filename}
             </h1>
-            <p className="text-xs text-slate-400 font-mono">
+            <p className="text-xs text-slate-400 font-mono print:text-slate-600">
               Prepared on: {new Date(brief.generatedAt).toLocaleString()}
             </p>
           </div>
 
-          <div className="flex items-center space-x-3 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 shrink-0 print:hidden">
+            <button
+              onClick={handlePrint}
+              className="inline-flex items-center space-x-2 bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-medium px-4 py-2.5 rounded-xl border border-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400"
+              aria-label="Print or Save Brief to PDF"
+            >
+              <Printer className="w-4 h-4 text-purple-400" />
+              <span>Print / Save PDF</span>
+            </button>
+
             <button
               onClick={handleCopyBrief}
               className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-slate-950 font-extrabold px-5 py-2.5 rounded-xl shadow-lg shadow-purple-500/20 text-xs transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400"
@@ -66,7 +80,7 @@ export const ConsultationBriefView: React.FC<ConsultationBriefViewProps> = ({
               {copied ? (
                 <>
                   <Check className="w-4 h-4 text-emerald-950" />
-                  <span>Copied to Clipboard!</span>
+                  <span>Copied!</span>
                 </>
               ) : (
                 <>
@@ -81,7 +95,7 @@ export const ConsultationBriefView: React.FC<ConsultationBriefViewProps> = ({
               className="inline-flex items-center space-x-2 bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-medium px-4 py-2.5 rounded-xl border border-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Back to Document</span>
+              <span>Back</span>
             </button>
           </div>
         </div>
@@ -336,7 +350,7 @@ export const ConsultationBriefView: React.FC<ConsultationBriefViewProps> = ({
       )}
 
       {/* Copy Brief Sticky Footer Callout */}
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xl">
+      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xl print:hidden">
         <div className="space-y-1">
           <span className="font-bold text-slate-100 text-sm block">
             Ready for your legal meeting?

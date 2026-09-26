@@ -101,11 +101,11 @@ export const Header: React.FC = () => {
             {profileDropdownOpen && (
               <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-slate-900 border border-slate-800 p-2 shadow-2xl z-50 text-xs">
                 <div className="px-3 py-2 border-b border-slate-800 space-y-1">
-                  <p className="font-semibold text-slate-200">Guest User (Demo)</p>
-                  <p className="text-[11px] text-slate-400">Step 2 Dashboard Preview</p>
+                  <p className="font-semibold text-slate-200">Guest User (Demo Session)</p>
+                  <p className="text-[11px] text-slate-400">LegalPilot AI Workspace</p>
                 </div>
-                <div className="pt-2 px-3 py-1.5 text-[11px] text-amber-400/90 font-mono">
-                  Authentication disabled in Step 2
+                <div className="pt-2 px-3 py-1.5 text-[11px] text-emerald-400/90 font-mono">
+                  Local Document Privacy Enabled
                 </div>
               </div>
             )}

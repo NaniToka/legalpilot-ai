@@ -115,13 +115,60 @@ Google Gemini API (gemini-2.5-flash)
 
 ---
 
+## 📁 Directory Structure & Architecture
+
+```
+legalpilot-ai/
+├── src/
+│   ├── app/                    # Next.js App Router (Pages & API Routes)
+│   │   ├── api/
+│   │   │   ├── ai/process/     # AI request server endpoint
+│   │   │   ├── documents/      # Document upload & extraction route
+│   │   │   └── health/         # Diagnostic health check endpoint
+│   │   ├── ask/                # Document Q&A workspace page
+│   │   ├── compare/            # Document comparison workspace page
+│   │   ├── documents/          # Document management & upload page
+│   │   └── page.tsx            # Main application dashboard
+│   ├── components/             # Client UI Components
+│   │   ├── analysis/           # Understanding & clause analysis views
+│   │   ├── checklist/          # Actionable next steps checklist UI
+│   │   ├── compare/            # Document comparison workflow UI
+│   │   ├── consultation/       # Legal professional consultation brief UI
+│   │   ├── dashboard/          # Hero, actions, trust & explanation cards
+│   │   ├── layout/             # Responsive header, footer, & mobile menu
+│   │   ├── qa/                 # Grounded Q&A conversation chat UI
+│   │   └── upload/             # Drag-and-drop file upload & card components
+│   ├── lib/                    # File validation, constants, & utilities
+│   ├── services/               # Server & Client Business Logic
+│   │   ├── ai/                 # AI service facade, Gemini adapter, prompts & error normalizers
+│   │   ├── compare/            # Deterministic diff engine & comparison services
+│   │   └── parser/             # PDF & DOCX binary parsers & text normalizer
+│   └── types/                  # Shared TypeScript interfaces & schemas
+├── tests/                      # Automated Vitest unit & integration test suites
+│   ├── aiClauseAnalysis.test.ts
+│   ├── aiConsultationBrief.test.ts
+│   ├── aiDocumentUnderstanding.test.ts
+│   ├── aiFoundation.test.ts
+│   ├── aiNextSteps.test.ts
+│   ├── aiQA.test.ts
+│   ├── documentComparison.test.ts
+│   ├── documentProcessing.test.ts
+│   ├── productionHardening.test.ts
+│   └── uiResponsiveAccessibility.test.ts
+├── .env.example
+├── next.config.ts              # Security headers & Next.js server configuration
+└── README.md
+```
+
+---
+
 ## 🛠️ Technology Stack
 
 - **Framework**: [Next.js](https://nextjs.org/) (React 19, App Router)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **AI SDK**: [@google/genai](https://www.npmjs.com/package/@google/genai) (Google Gemini 2.5 Flash)
 - **Document Parsers**: `pdf-parse` (PDF extraction) & `mammoth` (DOCX extraction)
-- **Testing**: `vitest` for automated unit & integration testing
+- **Testing**: `vitest` for automated unit & integration testing (10 test suites, 81 tests)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/) & [Lucide React](https://lucide.dev/)
 
 ---

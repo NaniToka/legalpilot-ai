@@ -154,3 +154,42 @@ export function validateNextStepsResult(
     limitations,
   };
 }
+
+export function formatNextStepsAsPlainText(
+  checklist: StructuredNextStepsResult
+): string {
+  let text = `==================================================\n`;
+  text += `ACTIONABLE LEGAL NEXT STEPS & DOCUMENT CHECKLIST\n`;
+  text += `==================================================\n`;
+  text += `Document: ${checklist.documentName}\n`;
+  text += `Generated: ${new Date(checklist.generatedAt).toLocaleString()}\n`;
+  text += `Total Tasks: ${checklist.totalItemsCount} (${checklist.highPriorityCount} High Priority)\n\n`;
+
+  text += `--- CHECKLIST ITEMS ---\n`;
+  checklist.items.forEach((item, idx) => {
+    text += `${idx + 1}. [${item.priority}] ${item.title}\n`;
+    text += `   Category: ${item.category}\n`;
+    text += `   Details: ${item.description}\n`;
+    if (item.dueDateText) text += `   Deadline: ${item.dueDateText}\n`;
+    text += `   Reason: ${item.reason}\n`;
+    if (item.sourceReferences && item.sourceReferences.length > 0) {
+      text += `   Sources: ${item.sourceReferences.join(", ")}\n`;
+    }
+    text += `\n`;
+  });
+
+  if (checklist.questionsForProfessional.length > 0) {
+    text += `--- QUESTIONS FOR A LEGAL PROFESSIONAL ---\n`;
+    checklist.questionsForProfessional.forEach((q, idx) => {
+      text += `${idx + 1}. ${q}\n`;
+    });
+    text += `\n`;
+  }
+
+  text += `==================================================\n`;
+  text += `LEGAL DISCLAIMER\n`;
+  text += `LegalPilot AI provides informational assistance based on the documents you provide. It is not a substitute for advice from a qualified legal professional.\n`;
+  text += `==================================================\n`;
+
+  return text;
+}
