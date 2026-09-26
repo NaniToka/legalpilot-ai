@@ -327,18 +327,27 @@ export const DocumentQAView: React.FC<DocumentQAViewProps> = ({ payload, onReset
 
       {/* Error Alert Banner */}
       {errorMessage && (
-        <div className="bg-rose-950/40 border border-rose-900/50 rounded-2xl p-4 flex items-center justify-between text-rose-200 text-xs sm:text-sm">
+        <div className="bg-rose-950/40 border border-rose-900/50 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-rose-200 text-xs sm:text-sm">
           <div className="flex items-center space-x-2">
             <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
             <span>{errorMessage}</span>
           </div>
-          <button
-            onClick={() => handleSubmitQuestion()}
-            className="inline-flex items-center space-x-1 px-3 py-1 rounded-lg bg-rose-900/60 hover:bg-rose-800 text-rose-100 text-xs font-semibold transition-colors"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Retry</span>
-          </button>
+          <div className="flex items-center space-x-2 shrink-0">
+            <button
+              onClick={onReset}
+              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back to Document</span>
+            </button>
+            <button
+              onClick={() => handleSubmitQuestion()}
+              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-rose-900/60 hover:bg-rose-800 text-rose-100 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Retry</span>
+            </button>
+          </div>
         </div>
       )}
 
@@ -350,7 +359,7 @@ export const DocumentQAView: React.FC<DocumentQAViewProps> = ({ payload, onReset
             onChange={(e) => setQuestionInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Ask LegalPilot about your document (e.g., What does this agreement say about termination?)"
-            disabled={isLoading}
+            disabled={isLoading || payload.wordCount === 0}
             maxLength={500}
             rows={3}
             className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400 transition-all resize-none disabled:opacity-50"
@@ -368,7 +377,7 @@ export const DocumentQAView: React.FC<DocumentQAViewProps> = ({ payload, onReset
 
               <button
                 onClick={() => handleSubmitQuestion()}
-                disabled={!questionInput.trim() || isLoading}
+                disabled={!questionInput.trim() || isLoading || payload.wordCount === 0}
                 className="inline-flex items-center space-x-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold px-5 py-2.5 rounded-xl shadow-lg shadow-amber-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-50"
               >
                 {isLoading ? (
@@ -388,12 +397,24 @@ export const DocumentQAView: React.FC<DocumentQAViewProps> = ({ payload, onReset
         </div>
       </div>
 
-      {/* Footer Legal Disclaimer */}
-      <div className="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 flex items-start space-x-3 text-slate-400 text-xs">
-        <Scale className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-        <p className="leading-relaxed">
-          LegalPilot AI provides general informational answers grounded in your document text. It is not a substitute for advice from a qualified legal professional.
-        </p>
+      {/* Footer Legal Disclaimer & Bottom Navigation */}
+      <div className="space-y-4">
+        <div className="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 flex items-start space-x-3 text-slate-400 text-xs">
+          <Scale className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+          <p className="leading-relaxed">
+            LegalPilot AI provides general informational answers grounded in your document text. It is not a substitute for advice from a qualified legal professional.
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between pt-2">
+          <button
+            onClick={onReset}
+            className="inline-flex items-center space-x-2 bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-semibold px-5 py-2.5 rounded-xl border border-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Document Overview</span>
+          </button>
+        </div>
       </div>
     </div>
   );

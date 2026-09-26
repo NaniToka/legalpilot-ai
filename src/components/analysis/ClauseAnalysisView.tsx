@@ -418,16 +418,28 @@ export const ClauseAnalysisView: React.FC<ClauseAnalysisViewProps> = ({
         )}
       </section>
 
-      {/* Footer Legal Disclaimer Callout */}
-      <div className="bg-amber-950/20 border border-amber-900/30 rounded-3xl p-6 flex items-start space-x-3 text-amber-200/90 text-xs sm:text-sm">
-        <Scale className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-        <div className="space-y-1">
-          <span className="font-semibold text-amber-400 uppercase text-[11px] tracking-wider block">
-            Informational Legal Analysis Notice
-          </span>
-          <p className="leading-relaxed text-amber-200/80 text-xs">
-            LegalPilot AI provides general informational assistance and is not a substitute for advice from a qualified legal professional. Points identified here are based on the contents of the uploaded document and are not legal conclusions.
-          </p>
+      {/* Footer Legal Disclaimer Callout & Bottom Return Navigation */}
+      <div className="space-y-4">
+        <div className="bg-amber-950/20 border border-amber-900/30 rounded-3xl p-6 flex items-start space-x-3 text-amber-200/90 text-xs sm:text-sm">
+          <Scale className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <span className="font-semibold text-amber-400 uppercase text-[11px] tracking-wider block">
+              Informational Legal Analysis Notice
+            </span>
+            <p className="leading-relaxed text-amber-200/80 text-xs">
+              LegalPilot AI provides general informational assistance and is not a substitute for advice from a qualified legal professional. Points identified here are based on the contents of the uploaded document and are not legal conclusions.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between pt-2">
+          <button
+            onClick={onReset}
+            className="inline-flex items-center space-x-2 bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-semibold px-5 py-2.5 rounded-xl border border-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Analyze Another Document</span>
+          </button>
         </div>
       </div>
     </div>
