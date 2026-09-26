@@ -1,22 +1,47 @@
 /**
- * AI Service Interface Stub
- * Will handle LLM API integration (Gemini / OpenAI / Anthropic) for legal document analysis in future steps.
+ * LegalPilot AI - Master AI Service Layer
+ * Decouples application UI and business logic from underlying LLM provider APIs.
  */
 
-import { LegalSummary, LegalRiskClause, QAMessage, ActionItem } from "@/types";
+import { AIRequestOptions, AIResponse } from "@/types/ai";
+import { AIProviderAdapter, GeminiAdapter } from "./adapters/geminiAdapter";
+import { buildTestHealthPrompt } from "./prompts/legalSystemPrompts";
 
-export interface AIAnalysisResult {
-  summary: LegalSummary;
-  risks: LegalRiskClause[];
-  actionItems: ActionItem[];
+// Singleton instance of configured provider adapter
+let currentAdapter: AIProviderAdapter = new GeminiAdapter();
+
+/**
+ * Configure or override active AI provider adapter
+ */
+export function setAIProviderAdapter(adapter: AIProviderAdapter): void {
+  currentAdapter = adapter;
 }
 
-export async function analyzeLegalText(extractedText: string): Promise<AIAnalysisResult> {
-  // Service stub for Step 1
-  throw new Error("AI Analysis service will be configured in future steps.");
+/**
+ * Get name of currently configured AI provider
+ */
+export function getActiveAIProviderName(): string {
+  return currentAdapter.providerName;
 }
 
-export async function askLegalQuestion(documentText: string, question: string, history: QAMessage[]): Promise<string> {
-  // Service stub for Step 1
-  throw new Error("AI Q&A service will be configured in future steps.");
+/**
+ * Execute a structured or unstructured AI request through the active provider abstraction
+ */
+export async function executeAIRequest<T = any>(
+  options: AIRequestOptions
+): Promise<AIResponse<T>> {
+  return currentAdapter.generateContent<T>(options);
+}
+
+/**
+ * Simple diagnostic health check verifying AI service readiness
+ */
+export async function checkAIServiceHealth(): Promise<AIResponse> {
+  const { systemInstruction, userPrompt } = buildTestHealthPrompt();
+  return executeAIRequest({
+    task: "health_check",
+    systemInstruction,
+    userInput: userPrompt,
+    temperature: 0.1,
+  });
 }
