@@ -332,4 +332,49 @@ export interface StructuredDocumentComparisonResult {
   limitations: string[];
 }
 
+// --- Step 11 Actionable Next Steps / Document Checklist Contracts ---
+
+export type ChecklistCategory =
+  | "DEADLINE"
+  | "OBLIGATION"
+  | "PAYMENT"
+  | "DOCUMENT"
+  | "TERMINATION"
+  | "RENEWAL"
+  | "INFORMATION_NEEDED"
+  | "REVIEW"
+  | "PROFESSIONAL_CONSULTATION";
+
+export type ChecklistPriority = "HIGH" | "MEDIUM" | "LOW";
+
+export type ChecklistStatus = "TODO" | "IN_PROGRESS" | "COMPLETED";
+
+export interface ChecklistItem {
+  id: string;
+  title: string;
+  description: string;
+  category: ChecklistCategory;
+  priority: ChecklistPriority;
+  status: ChecklistStatus;
+  sourceReferences?: string[];
+  dueDate?: string;
+  dueDateText?: string;
+  relatedClause?: string;
+  reason: string;
+  questions?: string[];
+  limitations?: string[];
+}
+
+export interface StructuredNextStepsResult {
+  documentId: string;
+  documentName: string;
+  generatedAt: string;
+  totalItemsCount: number;
+  highPriorityCount: number;
+  items: ChecklistItem[];
+  questionsForProfessional: string[];
+  limitations: string[];
+}
+
+
 

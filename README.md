@@ -14,7 +14,7 @@ Legal contracts, lease agreements, terms of service, and official notices are of
 
 ---
 
-## 🚀 End-to-End Workflow (Step 10 Implemented)
+## 🚀 End-to-End Workflow (Step 11 Implemented)
 
 ```
 1. UPLOAD PDF / DOCX
@@ -31,7 +31,7 @@ Legal contracts, lease agreements, terms of service, and official notices are of
          ↓
 7. "COMPARE DOCUMENTS" (Deterministic Diff + AI Legal Difference Analysis)
          ↓
-8. SIDE-BY-SIDE COMPARISON DASHBOARD (Added, Removed, Modified, Source Refs)
+8. "YOUR NEXT STEPS" (Actionable Document Checklist & Task Management)
 ```
 
 ### Document Capabilities
@@ -70,6 +70,14 @@ Legal contracts, lease agreements, terms of service, and official notices are of
 - **Grounded Change Breakdowns**: Dedicated sections for Changed Obligations, Changed Financial Terms, Changed Dates & Deadlines, and Changed Termination Terms.
 - **Neutral Change Terminology**: Uses factual change labels (`added`, `removed`, `modified`) instead of fake numerical risk scores.
 - **Tailored Legal Review Questions**: Generates practical questions to raise with a legal professional regarding version changes.
+
+#### 5. Actionable Next Steps / Document Checklist (Step 11)
+- **Evidence-Grounded Task Checklist**: Automatically derives actionable next steps, deadlines, obligations, payment tasks, and review points directly from uploaded document text.
+- **Facts vs. Suggestions**: Clearly separates explicit contractual facts from practical user suggestions.
+- **Relative & Explicit Deadlines**: Preserves relative notice windows verbatim (`at least 60 days before termination`) without inventing unbacked calendar dates.
+- **Missing Information Tracking**: Generates `INFORMATION_NEEDED` items for absent or ambiguous terms.
+- **Interactive Task Management**: Allows users to check/uncheck items (`TODO` $\leftrightarrow$ `COMPLETED`), filter by priority (`HIGH`, `MEDIUM`, `LOW`), filter by status, and view expanded source evidence and clause snippets.
+- **Dedicated Lawyer Questions**: Highlights neutral, practical questions to raise with a licensed legal professional.
 
 ---
 

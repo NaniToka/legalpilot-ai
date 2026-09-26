@@ -15,17 +15,21 @@ import {
   BrainCircuit,
   Bookmark,
   MessageSquare,
+  ListTodo,
 } from "lucide-react";
 import {
   ProcessedDocumentPayload,
   StructuredLegalDocumentAnalysis,
   StructuredClauseAnalysisResult,
+  StructuredNextStepsResult,
 } from "@/types";
 import { analyzeDocumentUnderstanding } from "@/services/ai/documentAnalysisService";
 import { analyzeImportantClauses } from "@/services/ai/clauseAnalysisService";
+import { generateDocumentNextSteps } from "@/services/ai/nextStepsService";
 import { StructuredAnalysisView } from "../analysis/StructuredAnalysisView";
 import { ClauseAnalysisView } from "../analysis/ClauseAnalysisView";
 import { DocumentQAView } from "../qa/DocumentQAView";
+import { DocumentChecklistCard } from "../checklist/DocumentChecklistCard";
 
 interface ProcessedDocumentCardProps {
   payload: ProcessedDocumentPayload;
@@ -40,12 +44,13 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
   const [showFullText, setShowFullText] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const [activeAction, setActiveAction] = useState<"none" | "understanding" | "clauses" | "qa">("none");
+  const [activeAction, setActiveAction] = useState<"none" | "understanding" | "clauses" | "checklist" | "qa">("none");
   const [showQAView, setShowQAView] = useState(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
 
   const [understandingResult, setUnderstandingResult] = useState<StructuredLegalDocumentAnalysis | null>(null);
   const [clauseResult, setClauseResult] = useState<StructuredClauseAnalysisResult | null>(null);
+  const [nextStepsResult, setNextStepsResult] = useState<StructuredNextStepsResult | null>(null);
 
   const isPdf = payload.fileType === "pdf";
 
@@ -132,6 +137,54 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
       setActiveAction("none");
     }
   };
+
+  const handleGenerateChecklist = async () => {
+    setActiveAction("checklist");
+    setAnalysisError(null);
+
+    try {
+      const res = await fetch("/api/ai/process", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          task: "checklist",
+          documentContext: {
+            filename: payload.filename,
+            pages: payload.pages,
+            chunks: payload.chunks,
+            documentText: payload.extractedText,
+          },
+          userInput: `Analyze the uploaded document (${payload.filename}) and extract an actionable checklist of next steps, obligations, deadlines, and questions for a legal professional.`,
+        }),
+      });
+
+      if (res.ok) {
+        const aiRes = await res.json();
+        if (aiRes.success && aiRes.data) {
+          setNextStepsResult(aiRes.data);
+          setActiveAction("none");
+          return;
+        }
+      }
+
+      const checklist = await generateDocumentNextSteps(payload);
+      setNextStepsResult(checklist);
+      setActiveAction("none");
+    } catch (err: any) {
+      setAnalysisError(err.message || "Failed to generate next steps checklist. Please check API configuration.");
+      setActiveAction("none");
+    }
+  };
+
+  if (nextStepsResult) {
+    return (
+      <DocumentChecklistCard
+        checklist={nextStepsResult}
+        filename={payload.filename}
+        onReset={onReset}
+      />
+    );
+  }
 
   if (showQAView) {
     return (
@@ -282,11 +335,29 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
             </button>
 
             <button
+              onClick={handleGenerateChecklist}
+              disabled={activeAction !== "none"}
+              className="inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-extrabold px-6 py-3 rounded-xl shadow-xl shadow-emerald-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:opacity-50"
+            >
+              {activeAction === "checklist" ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Preparing next steps...</span>
+                </>
+              ) : (
+                <>
+                  <ListTodo className="w-4 h-4" />
+                  <span>Your Next Steps</span>
+                </>
+              )}
+            </button>
+
+            <button
               onClick={() => setShowQAView(true)}
               disabled={activeAction !== "none"}
-              className="inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold px-6 py-3 rounded-xl shadow-xl shadow-amber-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-50"
+              className="inline-flex items-center justify-center space-x-2 bg-slate-800 hover:bg-slate-750 text-slate-200 font-semibold px-5 py-3 rounded-xl border border-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-50"
             >
-              <MessageSquare className="w-4 h-4" />
+              <MessageSquare className="w-4 h-4 text-amber-400" />
               <span>Ask Questions (Q&A)</span>
             </button>
           </div>
