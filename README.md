@@ -14,6 +14,33 @@ Legal contracts, lease agreements, terms of service, and official notices are of
 
 ---
 
+## 🚀 End-to-End Workflow (Step 7 Implemented)
+
+```
+1. UPLOAD PDF / DOCX
+         ↓
+2. INGESTION & TEXT EXTRACTION (pdf-parse / mammoth)
+         ↓
+3. NORMALIZATION & STRUCTURAL CHUNKING
+         ↓
+4. "UNDERSTAND THIS DOCUMENT" (Grounded LLM Prompting)
+         ↓
+5. STRUCTURED LEGAL OVERVIEW DASHBOARD
+```
+
+### Document Understanding Capabilities
+- **Document Type Identification**: Classifies uploaded file (Lease, Service Agreement, NDA, Employment Contract, etc.).
+- **Plain-Language Summary**: Accessible breakdown explaining complex legal concepts in simple terms without losing key legal terms.
+- **Parties & Entity Mapping**: Extracts party names, roles, and page/section source references.
+- **Important Dates & Deadlines**: Effective dates, expiration, notice periods, and milestones.
+- **Obligations & Rights**: Clear duty mapping for each party.
+- **Financial & Payment Terms**: Monetary fees, deposits, currencies, and payment schedules.
+- **Attention Point Clauses**: Key clauses (automatic renewal, liability limits, dispute resolution) with "Why It Matters" explanations.
+- **Questions for Lawyer**: Practical, tailored questions for the user's next legal meeting.
+- **Missing / Unspecified Items**: Lists standard items absent from the agreement (`"Not specified in the document."`).
+
+---
+
 ## 🤖 AI Foundation & Architecture
 
 LegalPilot AI features a decoupled, provider-agnostic AI infrastructure built behind an abstract provider adapter model:

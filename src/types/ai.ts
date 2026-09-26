@@ -26,7 +26,16 @@ export interface AIGroundedContext {
 }
 
 export interface AIRequestOptions {
-  task: "health_check" | "summarize" | "analyze_clauses" | "detect_risks" | "qa" | "compare" | "checklist" | string;
+  task:
+    | "health_check"
+    | "document_understanding"
+    | "summarize"
+    | "analyze_clauses"
+    | "detect_risks"
+    | "qa"
+    | "compare"
+    | "checklist"
+    | string;
   systemInstruction?: string;
   userInput?: string;
   documentContext?: AIGroundedContext;
@@ -53,6 +62,64 @@ export interface AIResponse<T = any> {
   usage?: AIUsageStats;
   durationMs: number;
   error?: AIError;
+}
+
+// --- Step 7 Document Understanding Structured Contracts ---
+
+export interface DocumentParty {
+  name: string;
+  role: string;
+  sourceRef?: string;
+}
+
+export interface ImportantDate {
+  date: string;
+  description: string;
+  sourceRef?: string;
+}
+
+export interface KeyObligation {
+  obligation: string;
+  party: string;
+  sourceRef?: string;
+}
+
+export interface KeyRight {
+  right: string;
+  party: string;
+  sourceRef?: string;
+}
+
+export interface FinancialTerm {
+  term: string;
+  amount?: string;
+  description: string;
+  sourceRef?: string;
+}
+
+export interface AttentionClause {
+  title: string;
+  explanation: string;
+  whyItMatters: string;
+  sourceRef?: string;
+}
+
+export interface StructuredLegalDocumentAnalysis {
+  documentId: string;
+  documentType: string;
+  overview: string;
+  purpose: string;
+  parties: DocumentParty[];
+  importantDates: ImportantDate[];
+  keyObligations: KeyObligation[];
+  keyRights: KeyRight[];
+  financialTerms: FinancialTerm[];
+  duration: string;
+  termination: string;
+  importantClauses: AttentionClause[];
+  questionsForLawyer: string[];
+  limitations: string[];
+  analyzedAt: string;
 }
 
 export interface StructuredLegalAnalysisContract {

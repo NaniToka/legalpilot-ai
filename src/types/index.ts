@@ -1,6 +1,8 @@
 /**
- * LegalPilot AI - Data Types & Interfaces
+ * LegalPilot AI - Master Data Types Index
  */
+
+export * from "./ai";
 
 export type DocumentFileType = "pdf" | "docx";
 

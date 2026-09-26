@@ -4,8 +4,6 @@ import React, { useState } from "react";
 import {
   CheckCircle2,
   AlertTriangle,
-  FileText,
-  Layers,
   Sparkles,
   ArrowLeft,
   Eye,
@@ -13,8 +11,12 @@ import {
   Copy,
   Check,
   ShieldCheck,
+  Loader2,
+  BrainCircuit,
 } from "lucide-react";
-import { ProcessedDocumentPayload } from "@/types";
+import { ProcessedDocumentPayload, StructuredLegalDocumentAnalysis } from "@/types";
+import { analyzeDocumentUnderstanding } from "@/services/ai/documentAnalysisService";
+import { StructuredAnalysisView } from "../analysis/StructuredAnalysisView";
 
 interface ProcessedDocumentCardProps {
   payload: ProcessedDocumentPayload;
@@ -29,6 +31,10 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
   const [showFullText, setShowFullText] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<StructuredLegalDocumentAnalysis | null>(null);
+
   const isPdf = payload.fileType === "pdf";
 
   const handleCopy = () => {
@@ -38,6 +44,58 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
       setTimeout(() => setCopied(false), 2000);
     }
   };
+
+  const handleUnderstandDocument = async () => {
+    setIsAnalyzing(true);
+    setAnalysisError(null);
+
+    try {
+      // 1. Attempt API server route first
+      const res = await fetch("/api/ai/process", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          task: "document_understanding",
+          documentContext: {
+            filename: payload.filename,
+            pages: payload.pages,
+            chunks: payload.chunks,
+            documentText: payload.extractedText,
+          },
+          userInput: `Analyze the uploaded legal document (${payload.filename}) and extract a comprehensive structured legal overview.`,
+        }),
+      });
+
+      if (res.ok) {
+        const aiRes = await res.json();
+        if (aiRes.success && aiRes.data) {
+          setAnalysisResult(aiRes.data);
+          setIsAnalyzing(false);
+          return;
+        }
+      }
+
+      // Fallback: execute client/server document analysis service
+      const analysis = await analyzeDocumentUnderstanding(payload);
+      setAnalysisResult(analysis);
+      setIsAnalyzing(false);
+    } catch (err: any) {
+      setAnalysisError(
+        err.message || "AI Analysis failed. Please verify API key configuration and try again."
+      );
+      setIsAnalyzing(false);
+    }
+  };
+
+  if (analysisResult) {
+    return (
+      <StructuredAnalysisView
+        analysis={analysisResult}
+        filename={payload.filename}
+        onReset={onReset}
+      />
+    );
+  }
 
   const previewText = showFullText
     ? payload.extractedText
@@ -74,6 +132,17 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
         </div>
       </div>
 
+      {/* Analysis Error Alert */}
+      {analysisError && (
+        <div className="bg-rose-950/40 border border-rose-900/50 rounded-2xl p-4 text-rose-200 text-xs sm:text-sm space-y-1">
+          <div className="flex items-center space-x-2 font-semibold text-rose-400 uppercase text-[11px] tracking-wider">
+            <AlertTriangle className="w-4 h-4" />
+            <span>AI Analysis Notice</span>
+          </div>
+          <p className="text-rose-200/90 leading-relaxed">{analysisError}</p>
+        </div>
+      )}
+
       {/* Warnings Banner if any */}
       {payload.warnings.length > 0 && (
         <div className="bg-amber-950/30 border border-amber-900/40 rounded-2xl p-4 text-amber-200 text-xs sm:text-sm space-y-1">
@@ -88,6 +157,47 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
           ))}
         </div>
       )}
+
+      {/* Prominent Action Banner to Understand This Document */}
+      <div className="bg-gradient-to-r from-amber-950/40 via-slate-900 to-indigo-950/40 border border-amber-500/30 rounded-3xl p-6 sm:p-8 space-y-4">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-400 p-0.5 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-amber-500/20">
+            <BrainCircuit className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="text-lg sm:text-xl font-bold text-slate-100">
+              Ready for Plain-English Legal Analysis
+            </h3>
+            <p className="text-xs text-slate-400">
+              Extract document type, purpose, parties, dates, obligations, rights, financial terms, and questions for a lawyer.
+            </p>
+          </div>
+        </div>
+
+        <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-slate-800/80">
+          <span className="text-xs text-slate-400 font-mono">
+            {payload.wordCount.toLocaleString()} words • {payload.pageCount} pages ready
+          </span>
+
+          <button
+            onClick={handleUnderstandDocument}
+            disabled={isAnalyzing}
+            className="inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold px-7 py-3.5 rounded-xl shadow-xl shadow-amber-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-50"
+          >
+            {isAnalyzing ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span>Understanding your document...</span>
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-5 h-5" />
+                <span>Understand This Document</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
 
       {/* Metadata Stats Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -135,7 +245,7 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
                 : "border-transparent text-slate-400 hover:text-slate-200"
             }`}
           >
-            Overview & Summary
+            Overview & Status
           </button>
           <button
             onClick={() => setActiveTab("chunks")}
@@ -164,15 +274,11 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
           <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-6 space-y-4 text-xs sm:text-sm text-slate-300">
             <div className="flex items-center space-x-2 text-amber-400 font-semibold text-xs uppercase tracking-wider">
               <Sparkles className="w-4 h-4" />
-              <span>Pipeline Status — Step 4 Ingestion Foundation Complete</span>
+              <span>Pipeline Status — Document Processed & Ready</span>
             </div>
             <p className="leading-relaxed text-slate-300">
-              The document text has been extracted, sanitized of formatting noise, and mapped into page-grounded structural chunks. Original legal terms and clause wording have been 100% preserved without modification or interpretation.
+              The document text has been extracted, sanitized of formatting noise, and mapped into page-grounded structural chunks. Click <strong>"Understand This Document"</strong> above to trigger AI document analysis.
             </p>
-            <div className="pt-2 text-xs text-slate-400 font-mono space-y-1">
-              <p>• Document ID: {payload.documentId}</p>
-              <p>• Ingestion Date: {new Date(payload.processedAt).toLocaleString()}</p>
-            </div>
           </div>
         )}
 
@@ -198,9 +304,6 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
                     <h4 className="font-bold text-slate-200 text-xs">{chunk.heading}</h4>
                   )}
                   <p className="text-slate-300 leading-relaxed font-sans">{chunk.text}</p>
-                  <div className="text-[10px] font-mono text-slate-500 pt-1">
-                    {chunk.wordCount} words • {chunk.charCount} chars
-                  </div>
                 </div>
               ))
             )}
@@ -242,7 +345,7 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-slate-800">
         <div className="flex items-center space-x-2 text-xs text-slate-400">
           <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-          <span>Extracted text prepared securely in memory. No third-party transmission.</span>
+          <span>Extracted text prepared securely in memory. No third-party transmission without action.</span>
         </div>
 
         <button
