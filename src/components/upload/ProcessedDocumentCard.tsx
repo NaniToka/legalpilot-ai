@@ -345,25 +345,33 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
           </div>
         </div>
 
-        <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 border-t border-slate-800/80">
-          <span className="text-xs text-slate-400 font-mono">
-            {payload.wordCount.toLocaleString()} words • {payload.pageCount} pages ready
-          </span>
+        <div className="pt-3 border-t border-slate-800/80 space-y-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs font-mono">
+            <span className="text-slate-400">
+              {payload.wordCount.toLocaleString()} words • {payload.pageCount} pages ready
+            </span>
+            {payload.wordCount === 0 && (
+              <span className="text-amber-400 font-sans font-semibold text-xs flex items-center gap-1.5 bg-amber-950/60 border border-amber-500/30 px-3 py-1 rounded-full">
+                <AlertTriangle className="w-3.5 h-3.5" />
+                <span>0 words extracted (Scanned / Image Document)</span>
+              </span>
+            )}
+          </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 w-full">
             <button
               onClick={handleUnderstandDocument}
-              disabled={activeAction !== "none"}
-              className="inline-flex items-center justify-center space-x-2 bg-slate-800 hover:bg-slate-750 text-slate-200 font-semibold px-5 py-3 rounded-xl border border-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-50"
+              disabled={activeAction !== "none" || payload.wordCount === 0}
+              className="w-full inline-flex items-center justify-center space-x-2 bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs sm:text-sm font-semibold px-4 py-3 rounded-xl border border-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {activeAction === "understanding" ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
-                  <span>Understanding document...</span>
+                  <Loader2 className="w-4 h-4 animate-spin text-amber-400 shrink-0" />
+                  <span>Understanding...</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4 text-amber-400" />
+                  <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
                   <span>Understand This Document</span>
                 </>
               )}
@@ -371,17 +379,17 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
 
             <button
               onClick={handleAnalyzeClauses}
-              disabled={activeAction !== "none"}
-              className="inline-flex items-center justify-center space-x-2 bg-slate-800 hover:bg-slate-750 text-slate-200 font-semibold px-5 py-3 rounded-xl border border-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-50"
+              disabled={activeAction !== "none" || payload.wordCount === 0}
+              className="w-full inline-flex items-center justify-center space-x-2 bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs sm:text-sm font-semibold px-4 py-3 rounded-xl border border-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {activeAction === "clauses" ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
+                  <Loader2 className="w-4 h-4 animate-spin text-amber-400 shrink-0" />
                   <span>Analyzing clauses...</span>
                 </>
               ) : (
                 <>
-                  <Bookmark className="w-4 h-4 text-amber-400" />
+                  <Bookmark className="w-4 h-4 text-amber-400 shrink-0" />
                   <span>Analyze Clauses</span>
                 </>
               )}
@@ -389,17 +397,17 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
 
             <button
               onClick={handleGenerateChecklist}
-              disabled={activeAction !== "none"}
-              className="inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-extrabold px-6 py-3 rounded-xl shadow-xl shadow-emerald-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:opacity-50"
+              disabled={activeAction !== "none" || payload.wordCount === 0}
+              className="w-full inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 text-xs sm:text-sm font-extrabold px-4 py-3 rounded-xl shadow-xl shadow-emerald-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {activeAction === "checklist" ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Preparing next steps...</span>
+                  <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+                  <span>Preparing...</span>
                 </>
               ) : (
                 <>
-                  <ListTodo className="w-4 h-4" />
+                  <ListTodo className="w-4 h-4 shrink-0" />
                   <span>Your Next Steps</span>
                 </>
               )}
@@ -407,17 +415,17 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
 
             <button
               onClick={handlePrepareConsultationBrief}
-              disabled={activeAction !== "none"}
-              className="inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-slate-950 font-extrabold px-6 py-3 rounded-xl shadow-xl shadow-purple-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 disabled:opacity-50"
+              disabled={activeAction !== "none" || payload.wordCount === 0}
+              className="w-full inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-slate-950 text-xs sm:text-sm font-extrabold px-4 py-3 rounded-xl shadow-xl shadow-purple-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {activeAction === "consultation" ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin text-purple-950" />
-                  <span>Preparing consultation brief...</span>
+                  <Loader2 className="w-4 h-4 animate-spin text-purple-950 shrink-0" />
+                  <span>Preparing...</span>
                 </>
               ) : (
                 <>
-                  <BriefIcon className="w-4 h-4" />
+                  <BriefIcon className="w-4 h-4 shrink-0" />
                   <span>Prepare Consultation Brief</span>
                 </>
               )}
@@ -425,10 +433,10 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
 
             <button
               onClick={() => setShowQAView(true)}
-              disabled={activeAction !== "none"}
-              className="inline-flex items-center justify-center space-x-2 bg-slate-800 hover:bg-slate-750 text-slate-200 font-semibold px-5 py-3 rounded-xl border border-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-50"
+              disabled={activeAction !== "none" || payload.wordCount === 0}
+              className="w-full inline-flex items-center justify-center space-x-2 bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs sm:text-sm font-semibold px-4 py-3 rounded-xl border border-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <MessageSquare className="w-4 h-4 text-amber-400" />
+              <MessageSquare className="w-4 h-4 text-amber-400 shrink-0" />
               <span>Ask Questions (Q&A)</span>
             </button>
           </div>
