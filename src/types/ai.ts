@@ -29,8 +29,8 @@ export interface AIRequestOptions {
   task:
     | "health_check"
     | "document_understanding"
-    | "summarize"
     | "analyze_clauses"
+    | "summarize"
     | "detect_risks"
     | "qa"
     | "compare"
@@ -120,6 +120,75 @@ export interface StructuredLegalDocumentAnalysis {
   questionsForLawyer: string[];
   limitations: string[];
   analyzedAt: string;
+}
+
+// --- Step 8 Clause, Obligation & Attention Point Analysis Contracts ---
+
+export type ReviewSeverity = "Review" | "Important" | "High Attention";
+
+export interface DetailedClauseFinding {
+  category: string;
+  title: string;
+  clauseSummary: string;
+  plainLanguageExplanation: string;
+  whyItMatters: string;
+  sourceReference?: string;
+}
+
+export interface DetailedObligation {
+  party: string;
+  obligation: string;
+  deadline?: string;
+  consequenceIfStated?: string;
+  sourceReference?: string;
+}
+
+export interface DetailedRight {
+  party: string;
+  right: string;
+  conditions?: string;
+  sourceReference?: string;
+}
+
+export interface AttentionPointFinding {
+  title: string;
+  explanation: string;
+  reasonForReview: string;
+  severity: ReviewSeverity;
+  sourceReference?: string;
+}
+
+export interface DetailedDeadline {
+  dateOrTrigger: string;
+  requirement: string;
+  sourceReference?: string;
+}
+
+export interface DetailedFinancialCommitment {
+  description: string;
+  amount?: string;
+  currency?: string;
+  conditions?: string;
+  sourceReference?: string;
+}
+
+export interface QuestionForProfessional {
+  question: string;
+  reason: string;
+}
+
+export interface StructuredClauseAnalysisResult {
+  documentId: string;
+  documentType: string;
+  analyzedAt: string;
+  importantClauses: DetailedClauseFinding[];
+  obligations: DetailedObligation[];
+  rights: DetailedRight[];
+  attentionPoints: AttentionPointFinding[];
+  deadlines: DetailedDeadline[];
+  financialCommitments: DetailedFinancialCommitment[];
+  questionsForProfessional: QuestionForProfessional[];
+  limitations: string[];
 }
 
 export interface StructuredLegalAnalysisContract {

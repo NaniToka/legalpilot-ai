@@ -13,10 +13,17 @@ import {
   ShieldCheck,
   Loader2,
   BrainCircuit,
+  Bookmark,
 } from "lucide-react";
-import { ProcessedDocumentPayload, StructuredLegalDocumentAnalysis } from "@/types";
+import {
+  ProcessedDocumentPayload,
+  StructuredLegalDocumentAnalysis,
+  StructuredClauseAnalysisResult,
+} from "@/types";
 import { analyzeDocumentUnderstanding } from "@/services/ai/documentAnalysisService";
+import { analyzeImportantClauses } from "@/services/ai/clauseAnalysisService";
 import { StructuredAnalysisView } from "../analysis/StructuredAnalysisView";
+import { ClauseAnalysisView } from "../analysis/ClauseAnalysisView";
 
 interface ProcessedDocumentCardProps {
   payload: ProcessedDocumentPayload;
@@ -31,9 +38,11 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
   const [showFullText, setShowFullText] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [activeAction, setActiveAction] = useState<"none" | "understanding" | "clauses">("none");
   const [analysisError, setAnalysisError] = useState<string | null>(null);
-  const [analysisResult, setAnalysisResult] = useState<StructuredLegalDocumentAnalysis | null>(null);
+
+  const [understandingResult, setUnderstandingResult] = useState<StructuredLegalDocumentAnalysis | null>(null);
+  const [clauseResult, setClauseResult] = useState<StructuredClauseAnalysisResult | null>(null);
 
   const isPdf = payload.fileType === "pdf";
 
@@ -46,11 +55,10 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
   };
 
   const handleUnderstandDocument = async () => {
-    setIsAnalyzing(true);
+    setActiveAction("understanding");
     setAnalysisError(null);
 
     try {
-      // 1. Attempt API server route first
       const res = await fetch("/api/ai/process", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -69,28 +77,73 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
       if (res.ok) {
         const aiRes = await res.json();
         if (aiRes.success && aiRes.data) {
-          setAnalysisResult(aiRes.data);
-          setIsAnalyzing(false);
+          setUnderstandingResult(aiRes.data);
+          setActiveAction("none");
           return;
         }
       }
 
-      // Fallback: execute client/server document analysis service
       const analysis = await analyzeDocumentUnderstanding(payload);
-      setAnalysisResult(analysis);
-      setIsAnalyzing(false);
+      setUnderstandingResult(analysis);
+      setActiveAction("none");
     } catch (err: any) {
-      setAnalysisError(
-        err.message || "AI Analysis failed. Please verify API key configuration and try again."
-      );
-      setIsAnalyzing(false);
+      setAnalysisError(err.message || "AI Analysis failed. Please verify API configuration and try again.");
+      setActiveAction("none");
     }
   };
 
-  if (analysisResult) {
+  const handleAnalyzeClauses = async () => {
+    setActiveAction("clauses");
+    setAnalysisError(null);
+
+    try {
+      const res = await fetch("/api/ai/process", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          task: "analyze_clauses",
+          documentContext: {
+            filename: payload.filename,
+            pages: payload.pages,
+            chunks: payload.chunks,
+            documentText: payload.extractedText,
+          },
+          userInput: `Analyze the uploaded document (${payload.filename}) for key clauses, obligations, rights, attention points, deadlines, and financial commitments.`,
+        }),
+      });
+
+      if (res.ok) {
+        const aiRes = await res.json();
+        if (aiRes.success && aiRes.data) {
+          setClauseResult(aiRes.data);
+          setActiveAction("none");
+          return;
+        }
+      }
+
+      const clauses = await analyzeImportantClauses(payload);
+      setClauseResult(clauses);
+      setActiveAction("none");
+    } catch (err: any) {
+      setAnalysisError(err.message || "AI Clause Analysis failed. Please check API configuration.");
+      setActiveAction("none");
+    }
+  };
+
+  if (clauseResult) {
+    return (
+      <ClauseAnalysisView
+        analysis={clauseResult}
+        filename={payload.filename}
+        onReset={onReset}
+      />
+    );
+  }
+
+  if (understandingResult) {
     return (
       <StructuredAnalysisView
-        analysis={analysisResult}
+        analysis={understandingResult}
         filename={payload.filename}
         onReset={onReset}
       />
@@ -158,7 +211,7 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
         </div>
       )}
 
-      {/* Prominent Action Banner to Understand This Document */}
+      {/* Prominent Action Banner for AI Workflows */}
       <div className="bg-gradient-to-r from-amber-950/40 via-slate-900 to-indigo-950/40 border border-amber-500/30 rounded-3xl p-6 sm:p-8 space-y-4">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-400 p-0.5 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-amber-500/20">
@@ -166,36 +219,56 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
           </div>
           <div>
             <h3 className="text-lg sm:text-xl font-bold text-slate-100">
-              Ready for Plain-English Legal Analysis
+              Ready for AI Legal Document Analysis
             </h3>
             <p className="text-xs text-slate-400">
-              Extract document type, purpose, parties, dates, obligations, rights, financial terms, and questions for a lawyer.
+              Select an AI legal analysis workflow below to analyze your document text.
             </p>
           </div>
         </div>
 
-        <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-slate-800/80">
+        <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 border-t border-slate-800/80">
           <span className="text-xs text-slate-400 font-mono">
             {payload.wordCount.toLocaleString()} words • {payload.pageCount} pages ready
           </span>
 
-          <button
-            onClick={handleUnderstandDocument}
-            disabled={isAnalyzing}
-            className="inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold px-7 py-3.5 rounded-xl shadow-xl shadow-amber-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-50"
-          >
-            {isAnalyzing ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Understanding your document...</span>
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-5 h-5" />
-                <span>Understand This Document</span>
-              </>
-            )}
-          </button>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <button
+              onClick={handleUnderstandDocument}
+              disabled={activeAction !== "none"}
+              className="inline-flex items-center justify-center space-x-2 bg-slate-800 hover:bg-slate-750 text-slate-200 font-semibold px-5 py-3 rounded-xl border border-slate-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-50"
+            >
+              {activeAction === "understanding" ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
+                  <span>Understanding document...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 text-amber-400" />
+                  <span>Understand This Document</span>
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={handleAnalyzeClauses}
+              disabled={activeAction !== "none"}
+              className="inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold px-6 py-3 rounded-xl shadow-xl shadow-amber-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-50"
+            >
+              {activeAction === "clauses" ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Analyzing clauses...</span>
+                </>
+              ) : (
+                <>
+                  <Bookmark className="w-4 h-4" />
+                  <span>Analyze Important Clauses</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -277,7 +350,7 @@ export const ProcessedDocumentCard: React.FC<ProcessedDocumentCardProps> = ({
               <span>Pipeline Status — Document Processed & Ready</span>
             </div>
             <p className="leading-relaxed text-slate-300">
-              The document text has been extracted, sanitized of formatting noise, and mapped into page-grounded structural chunks. Click <strong>"Understand This Document"</strong> above to trigger AI document analysis.
+              The document text has been extracted, sanitized of formatting noise, and mapped into page-grounded structural chunks. Select an AI action above to begin analysis.
             </p>
           </div>
         )}

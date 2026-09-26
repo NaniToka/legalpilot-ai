@@ -14,7 +14,7 @@ Legal contracts, lease agreements, terms of service, and official notices are of
 
 ---
 
-## 🚀 End-to-End Workflow (Step 7 Implemented)
+## 🚀 End-to-End Workflow (Step 8 Implemented)
 
 ```
 1. UPLOAD PDF / DOCX
@@ -23,21 +23,33 @@ Legal contracts, lease agreements, terms of service, and official notices are of
          ↓
 3. NORMALIZATION & STRUCTURAL CHUNKING
          ↓
-4. "UNDERSTAND THIS DOCUMENT" (Grounded LLM Prompting)
+4. "UNDERSTAND THIS DOCUMENT" (Structured Legal Overview)
          ↓
-5. STRUCTURED LEGAL OVERVIEW DASHBOARD
+5. "ANALYZE IMPORTANT CLAUSES" (Clause, Obligation & Points to Review)
+         ↓
+6. GROUNDED FINDINGS DASHBOARD (Category, Source Ref, Severity)
 ```
 
-### Document Understanding Capabilities
+### Document Capabilities
+
+#### 1. Document Understanding (Step 7)
 - **Document Type Identification**: Classifies uploaded file (Lease, Service Agreement, NDA, Employment Contract, etc.).
 - **Plain-Language Summary**: Accessible breakdown explaining complex legal concepts in simple terms without losing key legal terms.
 - **Parties & Entity Mapping**: Extracts party names, roles, and page/section source references.
 - **Important Dates & Deadlines**: Effective dates, expiration, notice periods, and milestones.
 - **Obligations & Rights**: Clear duty mapping for each party.
 - **Financial & Payment Terms**: Monetary fees, deposits, currencies, and payment schedules.
-- **Attention Point Clauses**: Key clauses (automatic renewal, liability limits, dispute resolution) with "Why It Matters" explanations.
 - **Questions for Lawyer**: Practical, tailored questions for the user's next legal meeting.
-- **Missing / Unspecified Items**: Lists standard items absent from the agreement (`"Not specified in the document."`).
+
+#### 2. Clause, Obligation & Attention-Point Analysis (Step 8)
+- **Important Clauses Breakdown**: Categorized analysis (Payment, Term, Renewal, Termination, IP, Liability, Indemnity, Dispute Resolution, Governing Law, Non-Compete) with summaries, plain-language explanations, and "Why It Matters".
+- **Explicit Obligation Tracking**: Maps exact party duties, deadlines, and stated contractual consequences without inventing unstated fallout.
+- **Granted Rights Analysis**: Grounded extraction of rights, notice powers, termination rights, and conditions.
+- **Points to Review (Attention Points)**: Identifies provisions deserving closer review (auto-renewal, unilateral indemnity, broad restrictions) using non-judgmental, review-priority tiers (`Review`, `Important`, `High Attention`).
+- **Deadlines & Notice Windows**: Exact dates or relative triggers (`60 days prior to expiry`) preserved verbatim.
+- **Financial Commitments**: Structured extraction of amounts, currencies, and payment conditions.
+- **Grounded Legal Questions**: Generates practical, evidence-backed questions for a legal professional based on identified ambiguities.
+- **Page & Section Source References**: Attaches page numbers, section headers, or short text references to findings.
 
 ---
 
