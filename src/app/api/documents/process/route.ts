@@ -3,7 +3,24 @@ import { processLegalDocument } from "@/services/parser/documentProcessor";
 
 export async function POST(req: NextRequest) {
   try {
-    const formData = await req.formData();
+    const contentType = req.headers.get("content-type") || "";
+    if (!contentType.includes("multipart/form-data")) {
+      return NextResponse.json(
+        { error: "Invalid request payload. Expected multipart/form-data with document file." },
+        { status: 400 }
+      );
+    }
+
+    let formData: FormData;
+    try {
+      formData = await req.formData();
+    } catch {
+      return NextResponse.json(
+        { error: "Failed to parse document form data. Please check upload payload." },
+        { status: 400 }
+      );
+    }
+
     const file = formData.get("file") as File | null;
 
     if (!file) {
@@ -21,9 +38,9 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(result, { status: 200 });
-  } catch (err: any) {
+  } catch {
     return NextResponse.json(
-      { error: err.message || "Internal server error during document processing." },
+      { error: "Internal server error during document processing. Please try again." },
       { status: 500 }
     );
   }

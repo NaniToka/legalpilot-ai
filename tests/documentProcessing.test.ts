@@ -86,7 +86,7 @@ describe("Document Processing & Extraction Pipeline", () => {
 
       expect(result.status).toBe("failed");
       expect(result.errors.length).toBeGreaterThan(0);
-      expect(result.errors[0]).toContain("PDF Parsing Failure");
+      expect(result.errors[0]).toMatch(/signature does not match|Parsing Failure/i);
     });
 
     it("should extract synthetic text payload from DOCX buffer cleanly", async () => {

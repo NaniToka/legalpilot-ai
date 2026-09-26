@@ -22,7 +22,52 @@ export function formatFileSize(bytes: number): string {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
 }
 
-export function validateLegalDocument(file: File): ValidationResult {
+export function sanitizeFilename(filename: string): string {
+  if (!filename) return "document.pdf";
+  // Remove path traversal characters (/, \, ..), control chars, and trim whitespace
+  const sanitized = filename
+    .replace(/^.*[\\/]/, "")
+    .replace(/\.\.+/g, ".")
+    .replace(/[^\w\s\.\-\(\)]/g, "_")
+    .trim();
+  return sanitized || "legal_document.pdf";
+}
+
+export function verifyFileSignature(
+  buffer: Uint8Array | Buffer
+): { isValid: boolean; detectedType?: DocumentFileType; error?: string } {
+  if (!buffer || buffer.length < 4) {
+    return {
+      isValid: false,
+      error: "File buffer is too small or corrupted to verify content signature.",
+    };
+  }
+
+  const b0 = buffer[0];
+  const b1 = buffer[1];
+  const b2 = buffer[2];
+  const b3 = buffer[3];
+
+  // PDF signature: %PDF (0x25, 0x50, 0x44, 0x46)
+  if (b0 === 0x25 && b1 === 0x50 && b2 === 0x44 && b3 === 0x46) {
+    return { isValid: true, detectedType: "pdf" };
+  }
+
+  // DOCX (ZIP archive signature): PK\x03\x04 (0x50, 0x4B, 0x03, 0x04)
+  if (b0 === 0x50 && b1 === 0x4b && b2 === 0x03 && b3 === 0x04) {
+    return { isValid: true, detectedType: "docx" };
+  }
+
+  return {
+    isValid: false,
+    error: "File content signature does not match supported PDF (%PDF) or DOCX (PK) document formats.",
+  };
+}
+
+export function validateLegalDocument(
+  file: File,
+  buffer?: Buffer | Uint8Array
+): ValidationResult {
   if (!file) {
     return { isValid: false, error: "No document was selected." };
   }
@@ -44,9 +89,10 @@ export function validateLegalDocument(file: File): ValidationResult {
     };
   }
 
-  // 3. Check extension
-  const extension = `.${file.name.split(".").pop()?.toLowerCase()}`;
-  const mimeType = file.type.toLowerCase();
+  // 3. Check extension & declared MIME type
+  const safeName = sanitizeFilename(file.name);
+  const extension = `.${safeName.split(".").pop()?.toLowerCase()}`;
+  const mimeType = (file.type || "").toLowerCase();
 
   let detectedType: DocumentFileType | undefined;
 
@@ -65,6 +111,24 @@ export function validateLegalDocument(file: File): ValidationResult {
       isValid: false,
       error: `Unsupported file type (${extension || "unknown"}). Please upload a PDF (.pdf) or Word (.docx) document.`,
     };
+  }
+
+  // 4. Content signature check if buffer is supplied
+  if (buffer) {
+    const sigResult = verifyFileSignature(buffer);
+    if (!sigResult.isValid) {
+      return {
+        isValid: false,
+        error: sigResult.error || "File content validation failed.",
+      };
+    }
+    // Verify extension matches detected signature
+    if (sigResult.detectedType && sigResult.detectedType !== detectedType) {
+      return {
+        isValid: false,
+        error: `File extension (${extension}) does not match actual binary content format (${sigResult.detectedType.toUpperCase()}).`,
+      };
+    }
   }
 
   return {

@@ -1,6 +1,6 @@
 import { parsePDFBuffer } from "./pdfParser";
 import { parseDOCXBuffer } from "./docxParser";
-import { validateLegalDocument, formatFileSize } from "@/lib/fileValidation";
+import { validateLegalDocument, sanitizeFilename, formatFileSize } from "@/lib/fileValidation";
 import { ProcessedDocumentPayload, DocumentFileType } from "@/types";
 import { countWords } from "./textNormalizer";
 
@@ -9,21 +9,22 @@ export async function processLegalDocument(
   filename: string,
   declaredMimeType?: string
 ): Promise<ProcessedDocumentPayload> {
+  const safeFilename = sanitizeFilename(filename);
   const documentId = `doc_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-  const fileSize = fileBuffer.length;
+  const fileSize = fileBuffer ? fileBuffer.length : 0;
   const formattedSize = formatFileSize(fileSize);
   const processedAt = new Date().toISOString();
 
   // Convert Buffer to Uint8Array for W3C File BlobPart compatibility
-  const uint8Array = new Uint8Array(fileBuffer);
-  const mockFile = new File([uint8Array], filename, { type: declaredMimeType || "" });
-  const validation = validateLegalDocument(mockFile);
+  const uint8Array = new Uint8Array(fileBuffer || []);
+  const mockFile = new File([uint8Array], safeFilename, { type: declaredMimeType || "" });
+  const validation = validateLegalDocument(mockFile, fileBuffer);
 
   if (!validation.isValid || !validation.fileType) {
     return {
       documentId,
-      filename,
-      fileType: (filename.endsWith(".pdf") ? "pdf" : "docx") as DocumentFileType,
+      filename: safeFilename,
+      fileType: (safeFilename.endsWith(".pdf") ? "pdf" : "docx") as DocumentFileType,
       fileSize,
       formattedSize,
       processedAt,
@@ -73,7 +74,7 @@ export async function processLegalDocument(
 
     return {
       documentId,
-      filename,
+      filename: safeFilename,
       fileType,
       fileSize,
       formattedSize,
@@ -91,7 +92,7 @@ export async function processLegalDocument(
   } catch (err: any) {
     return {
       documentId,
-      filename,
+      filename: safeFilename,
       fileType,
       fileSize,
       formattedSize,
