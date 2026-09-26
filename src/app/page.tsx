@@ -7,9 +7,9 @@ import {
   MessageSquare,
   GitCompare,
   CheckSquare,
-  ArrowRight,
   Shield,
   Zap,
+  LockKeyhole,
   CheckCircle2,
 } from "lucide-react";
 import { APP_CONFIG, PLANNED_FEATURES } from "@/lib/constants";
@@ -136,7 +136,7 @@ export default function Home() {
 
           <div className="space-y-2">
             <div className="font-semibold text-slate-200 flex items-center space-x-2">
-              <Lock className="w-4 h-4 text-emerald-400" />
+              <LockKeyhole className="w-4 h-4 text-emerald-400" />
               <span>Environment Security</span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
@@ -158,3 +158,4 @@ export default function Home() {
     </div>
   );
 }
+
