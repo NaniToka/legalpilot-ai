@@ -96,59 +96,89 @@ For individuals, freelancers, and small business owners without in-house legal c
 
 ---
 
-## 📁 Directory Structure & Architecture
+## 📁 Directory Structure & Architecture (Frontend & Backend Separation)
+
+ LegalPilot AI uses a clean architectural separation between the **Frontend (Client Presentation Layer)** and **Backend (Server & AI Pipeline Layer)**.
 
 ```
 legalpilot-ai/
-├── fixtures/                   # Synthetic demo contract fixtures for evaluator testing
-│   ├── synthetic_sample_agreement.txt
-│   └── synthetic_sample_agreement_v2.txt
-├── src/
-│   ├── app/                    # Next.js App Router (Pages & API Routes)
-│   │   ├── api/
-│   │   │   ├── ai/process/     # AI request server endpoint
-│   │   │   ├── documents/      # Document upload & extraction route
-│   │   │   └── health/         # Diagnostic health check endpoint
-│   │   ├── ask/                # Document Q&A workspace page
-│   │   ├── compare/            # Document comparison workspace page
-│   │   ├── documents/          # Document management & upload page
-│   │   └── page.tsx            # Main application dashboard
-│   ├── components/             # Client UI Components
-│   │   ├── analysis/           # Understanding & clause analysis views
-│   │   ├── checklist/          # Actionable next steps checklist UI
-│   │   ├── compare/            # Document comparison workflow UI
-│   │   ├── consultation/       # Legal professional consultation brief UI
-│   │   ├── dashboard/          # Hero, actions, trust & explanation cards
-│   │   ├── layout/             # Responsive header, footer, & mobile menu
-│   │   ├── qa/                 # Grounded Q&A conversation chat UI
-│   │   └── upload/             # Drag-and-drop file upload & card components
-│   ├── lib/                    # File validation, constants, & utilities
-│   ├── services/               # Server & Client Business Logic
-│   │   ├── ai/                 # AI service facade, Gemini adapter, prompts & error normalizers
-│   │   ├── compare/            # Deterministic diff engine & comparison services
-│   │   └── parser/             # PDF & DOCX binary parsers & text normalizer
-│   └── types/                  # Shared TypeScript interfaces & schemas
-├── tests/                      # Automated Vitest unit & integration test suites (10 test suites, 81 tests)
-│   ├── aiClauseAnalysis.test.ts
-│   ├── aiConsultationBrief.test.ts
-│   ├── aiDocumentUnderstanding.test.ts
-│   ├── aiFoundation.test.ts
-│   ├── aiNextSteps.test.ts
-│   ├── aiQA.test.ts
-│   ├── documentComparison.test.ts
-│   ├── documentProcessing.test.ts
-│   ├── productionHardening.test.ts
-│   └── uiResponsiveAccessibility.test.ts
-├── .env.example
-├── next.config.ts              # Security headers & Next.js server configuration
-└── README.md
+├── 🎨 FRONTEND ARCHITECTURE (Client UI & Presentation Layer)
+│   └── src/
+│       ├── app/                         # Next.js App Router Pages (Frontend Views)
+│       │   ├── page.tsx                 # Main Application Dashboard View
+│       │   ├── documents/page.tsx       # Document Upload & Management View
+│       │   ├── ask/page.tsx             # Evidence-Grounded Legal Q&A Workspace View
+│       │   └── compare/page.tsx         # Legal Document Version Comparison View
+│       └── components/                  # Client UI Component Library
+│           ├── analysis/                # Clause, Obligation & Attention-Point Cards
+│           ├── checklist/               # Actionable Next-Steps Checklist UI
+│           ├── compare/                 # Dual Document Diffs & Side-by-Side Views
+│           ├── consultation/            # Legal Professional Brief Generator & Print UI
+│           ├── dashboard/               # Hero Banner, Workflow Guide & Features
+│           ├── layout/                  # Navigation Bar, Mobile Drawer & Footer
+│           ├── qa/                      # Interactive Q&A Chat & Citation Cards
+│           └── upload/                  # File Drag-and-Drop Zone & Document Cards
+│
+├── ⚙️ BACKEND ARCHITECTURE (Server APIs, Ingestion & AI Engines)
+│   └── src/
+│       ├── app/api/                     # Server API Routes (Backend Endpoints)
+│       │   ├── documents/route.ts       # Upload Ingestion, Magic Header & Parsing API
+│       │   ├── ai/process/route.ts      # Server-Grounded AI Inference API (Isolated Secrets)
+│       │   └── health/route.ts          # System Diagnostic & API Health API
+│       └── services/                    # Core Backend Services & Business Logic
+│           ├── ai/                      # AI Engine Pipeline
+│           │   ├── aiFacade.ts          # Service Facade & Provider Router
+│           │   ├── adapters/            # Google Gemini 2.5 Flash Provider Adapter
+│           │   ├── prompts/             # Typed Legal Analysis & Grounded Prompts
+│           │   ├── schemas/             # JSON Output Schema Validators
+│           │   └── errors/              # Timeout & Retry Error Normalizer
+│           ├── parser/                  # Ingestion & Ingestive Text Extraction
+│           │   ├── pdfParser.ts         # pdf-parse Binary Extraction Engine
+│           │   ├── docxParser.ts        # mammoth DOCX Extraction Engine
+│           │   └── textNormalizer.ts    # Hyphen Repair & Structural Chunking Engine
+│           └── compare/                 # Document Comparison Engine
+│               ├── diffEngine.ts        # Deterministic Text Diff Calculation
+│               └── comparisonService.ts # Legal Difference Analysis & Mapping
+│
+├── 🔗 SHARED CORE & UTILITIES
+│   └── src/
+│       ├── types/                       # Shared TypeScript Interfaces & Contracts
+│       │   ├── ai.ts                    # Grounded Q&A, Clause & Summary Schemas
+│       │   ├── document.ts              # Page Chunks, Upload Payloads & Metadata
+│       │   ├── comparison.ts            # Version Diffs & Structural Changes
+│       │   ├── checklist.ts             # Actionable Tasks & Priority Categories
+│       │   └── brief.ts                 # Consultation Preparation Brief Contracts
+│       └── lib/                         # Shared Utilities & System Constants
+│           ├── constants.ts             # Max Upload Sizes & Allowed MIME Types
+│           └── validation.ts            # Binary Header Verification & Path Sanitization
+│
+├── 🧪 AUTOMATED TEST SUITE
+│   └── tests/                           # 10 Vitest Unit & Integration Test Suites
+│       ├── aiClauseAnalysis.test.ts
+│       ├── aiConsultationBrief.test.ts
+│       ├── aiDocumentUnderstanding.test.ts
+│       ├── aiFoundation.test.ts
+│       ├── aiNextSteps.test.ts
+│       ├── aiQA.test.ts
+│       ├── documentComparison.test.ts
+│       ├── documentProcessing.test.ts
+│       ├── productionHardening.test.ts
+│       └── uiResponsiveAccessibility.test.ts
+│
+└── 📁 ROOT & CONFIGURATION
+    ├── fixtures/                        # Synthetic Contract Samples for Evaluator Demo
+    ├── .env.example                     # Environment Variables Template
+    ├── next.config.ts                   # Security Headers & Next.js Production Config
+    └── README.md                        # Production Documentation
 ```
 
-### Component Responsibility Separation
+### Component Responsibility & Architectural Boundaries
 
-- **Frontend Client (`src/components/`, `src/app/`)**: Handles UI presentation, responsive layouts, interactive client state, accessibility, keyboard navigation, and API communication.
-- **Backend / Server (`src/app/api/`, `src/services/`)**: Handles document parsing, text extraction, binary magic header validation, AI request execution, schema validation, and server secret isolation.
-- **Shared Contracts (`src/types/`, `src/lib/`)**: Shared TypeScript interfaces, JSON schemas, constants, and validation helper functions.
+| Layer Name | Subdirectories / Files | Key Responsibilities |
+| :--- | :--- | :--- |
+| **Frontend Architecture** | `src/app/(pages)`, `src/components/` | Renders client UI, interactive state management, responsive breakpoints, accessibility ARIA patterns, visual diff components, and clipboard/print exports. |
+| **Backend Architecture** | `src/app/api/`, `src/services/` | Executes server side logic, binary magic header validation, PDF/DOCX text parsing, structural chunking, Gemini API request execution, isolated API secrets, and deterministic text diffing. |
+| **Shared Core** | `src/types/`, `src/lib/` | Provides shared TypeScript type definitions, JSON output schema contracts, file size constants, path sanitization, and security validation helpers. |
 
 ---
 
