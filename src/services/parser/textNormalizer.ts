@@ -21,11 +21,8 @@ export function normalizeLegalText(rawText: string): string {
   // 4. Repair line-break hyphenated words (e.g. "indemni-\nfication" -> "indemnification")
   text = text.replace(/([a-zA-Z]{2,})-\n([a-zA-Z]{2,})/g, "$1$2");
 
-  // 5. Trim horizontal whitespace at start and end of each line
-  text = text
-    .split("\n")
-    .map((line) => line.replace(/[ \t]+/g, " ").trim())
-    .join("\n");
+  // 5. Trim horizontal whitespace and line padding in a single pass without array allocations
+  text = text.replace(/[ \t]+/g, " ").replace(/^[ \t]+|[ \t]+$/gm, "");
 
   // 6. Cap consecutive blank lines to at most 2 newlines (preserving paragraph structure)
   text = text.replace(/\n{3,}/g, "\n\n");

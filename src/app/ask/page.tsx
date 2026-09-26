@@ -3,9 +3,18 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { MessageSquare, ArrowLeft, Upload, FileText } from "lucide-react";
-import { DocumentQAView } from "@/components/qa/DocumentQAView";
-import { DocumentUploadWorkflow } from "@/components/upload/DocumentUploadWorkflow";
+import dynamic from "next/dynamic";
 import { ProcessedDocumentPayload } from "@/types";
+
+const DocumentQAView = dynamic(
+  () => import("@/components/qa/DocumentQAView").then((mod) => mod.DocumentQAView),
+  { loading: () => <div className="p-12 text-center text-xs text-amber-400 font-mono animate-pulse">Loading Q&A Assistant Workspace...</div> }
+);
+
+const DocumentUploadWorkflow = dynamic(
+  () => import("@/components/upload/DocumentUploadWorkflow").then((mod) => mod.DocumentUploadWorkflow),
+  { loading: () => <div className="p-12 text-center text-xs text-emerald-400 font-mono animate-pulse">Loading Document Ingestion Engine...</div> }
+);
 
 const samplePayload: ProcessedDocumentPayload = {
   documentId: "doc_sample_lease",

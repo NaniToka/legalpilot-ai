@@ -56,15 +56,17 @@ export const DocumentChecklistCard: React.FC<DocumentChecklistCardProps> = ({
     setExpandedItemIds((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const completedCount = items.filter((i) => i.status === "COMPLETED").length;
+  const completedCount = React.useMemo(() => items.filter((i) => i.status === "COMPLETED").length, [items]);
   const remainingCount = items.length - completedCount;
 
-  const filteredItems = items.filter((item) => {
-    if (activeFilter === "TODO") return item.status !== "COMPLETED";
-    if (activeFilter === "COMPLETED") return item.status === "COMPLETED";
-    if (activeFilter === "HIGH") return item.priority === "HIGH";
-    return true;
-  });
+  const filteredItems = React.useMemo(() => {
+    return items.filter((item) => {
+      if (activeFilter === "TODO") return item.status !== "COMPLETED";
+      if (activeFilter === "COMPLETED") return item.status === "COMPLETED";
+      if (activeFilter === "HIGH") return item.priority === "HIGH";
+      return true;
+    });
+  }, [items, activeFilter]);
 
   const getCategoryBadge = (cat: ChecklistCategory) => {
     switch (cat) {

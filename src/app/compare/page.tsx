@@ -3,7 +3,12 @@
 import React from "react";
 import Link from "next/link";
 import { GitCompare, ArrowLeft } from "lucide-react";
-import { DocumentCompareWorkflow } from "@/components/compare/DocumentCompareWorkflow";
+import dynamic from "next/dynamic";
+
+const DocumentCompareWorkflow = dynamic(
+  () => import("@/components/compare/DocumentCompareWorkflow").then((mod) => mod.DocumentCompareWorkflow),
+  { loading: () => <div className="p-12 text-center text-xs text-sky-400 font-mono animate-pulse">Loading Document Comparison Engine...</div> }
+);
 
 export default function ComparePage() {
   return (

@@ -3,6 +3,18 @@ import { AIRequestOptions, AIResponse } from "@/types/ai";
 import { normalizeAIError } from "../aiErrorNormalizer";
 import { formatGroundedDocumentContext, buildGroundedSystemInstruction } from "../prompts/legalSystemPrompts";
 
+let cachedApiKey: string | null = null;
+let cachedClientInstance: GoogleGenAI | null = null;
+
+function getGoogleGenAIClient(apiKey: string): GoogleGenAI {
+  if (cachedClientInstance && cachedApiKey === apiKey) {
+    return cachedClientInstance;
+  }
+  cachedApiKey = apiKey;
+  cachedClientInstance = new GoogleGenAI({ apiKey });
+  return cachedClientInstance;
+}
+
 export interface AIProviderAdapter {
   providerName: string;
   generateContent<T = any>(options: AIRequestOptions): Promise<AIResponse<T>>;
@@ -32,7 +44,7 @@ export class GeminiAdapter implements AIProviderAdapter {
     }
 
     try {
-      const ai = new GoogleGenAI({ apiKey });
+      const ai = getGoogleGenAIClient(apiKey);
 
       // Construct system instruction with grounding rules
       const systemInstruction = buildGroundedSystemInstruction(options.systemInstruction);

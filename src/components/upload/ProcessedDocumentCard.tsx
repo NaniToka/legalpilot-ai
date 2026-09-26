@@ -18,6 +18,7 @@ import {
   ListTodo,
   FileText as BriefIcon,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import {
   ProcessedDocumentPayload,
   StructuredLegalDocumentAnalysis,
@@ -29,11 +30,31 @@ import { analyzeDocumentUnderstanding } from "@/services/ai/documentAnalysisServ
 import { analyzeImportantClauses } from "@/services/ai/clauseAnalysisService";
 import { generateDocumentNextSteps } from "@/services/ai/nextStepsService";
 import { generateConsultationBrief } from "@/services/ai/consultationService";
-import { StructuredAnalysisView } from "../analysis/StructuredAnalysisView";
-import { ClauseAnalysisView } from "../analysis/ClauseAnalysisView";
-import { DocumentQAView } from "../qa/DocumentQAView";
-import { DocumentChecklistCard } from "../checklist/DocumentChecklistCard";
-import { ConsultationBriefView } from "../consultation/ConsultationBriefView";
+
+const StructuredAnalysisView = dynamic(
+  () => import("../analysis/StructuredAnalysisView").then((mod) => mod.StructuredAnalysisView),
+  { loading: () => <div className="p-8 text-center text-xs text-amber-400 font-mono animate-pulse">Loading Document Understanding Analysis...</div> }
+);
+
+const ClauseAnalysisView = dynamic(
+  () => import("../analysis/ClauseAnalysisView").then((mod) => mod.ClauseAnalysisView),
+  { loading: () => <div className="p-8 text-center text-xs text-amber-400 font-mono animate-pulse">Loading Clause & Obligation Analysis...</div> }
+);
+
+const DocumentQAView = dynamic(
+  () => import("../qa/DocumentQAView").then((mod) => mod.DocumentQAView),
+  { loading: () => <div className="p-8 text-center text-xs text-amber-400 font-mono animate-pulse">Loading Document Q&A Workspace...</div> }
+);
+
+const DocumentChecklistCard = dynamic(
+  () => import("../checklist/DocumentChecklistCard").then((mod) => mod.DocumentChecklistCard),
+  { loading: () => <div className="p-8 text-center text-xs text-emerald-400 font-mono animate-pulse">Loading Actionable Next Steps...</div> }
+);
+
+const ConsultationBriefView = dynamic(
+  () => import("../consultation/ConsultationBriefView").then((mod) => mod.ConsultationBriefView),
+  { loading: () => <div className="p-8 text-center text-xs text-purple-400 font-mono animate-pulse">Loading Legal Consultation Brief...</div> }
+);
 
 interface ProcessedDocumentCardProps {
   payload: ProcessedDocumentPayload;

@@ -25,8 +25,8 @@ export function calculateTextSimilarity(str1: string, str2: string): number {
     if (set2.has(w)) intersection++;
   });
 
-  const union = new Set([...words1, ...words2]).size;
-  return union === 0 ? 1.0 : intersection / union;
+  const unionSize = set1.size + set2.size - intersection;
+  return unionSize === 0 ? 1.0 : intersection / unionSize;
 }
 
 export function computeDeterministicDiff(
